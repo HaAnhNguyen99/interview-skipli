@@ -55,11 +55,27 @@ router.post(
  * @body    { employeeId: "EMPLOYEE ID" }
  * @return  { name, email, department, ... }
  */
-router.post(
+router.get(
   "/get-employee",
   authMiddleware,
   managerOnly,
   controller.getEmployee
 );
+
+/**
+ * @route   POST /api/setup-employee
+ * @desc    Employee sets up their account (username, password) using the token/link from email.
+ * @body    { employeeId: "ID", token: "TOKEN", username: "USERNAME", password: "PASSWORD" }
+ */
+router.post("/setup-employee", controller.setupEmployeeAccount);
+
+/**
+ * @route   POST /api/login-employee
+ * @desc    Employee login using username and password.
+ *          Returns a JWT token if successful.
+ * @body    { username: "USERNAME", password: "PASSWORD" }
+ * @return  { success: true, employeeId, role, token }
+ */
+router.post("/login-employee", controller.employeeLogin);
 
 module.exports = router;

@@ -17,25 +17,16 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import employeeAPI from "@/services/employeeApi";
 
 // 1. Định nghĩa Zod schema validate
-const schema = z
-  .object({
-    username: z.string().min(3, "Username must be at least 3 characters"),
-    password: z.string().min(6, "Password must be at least 6 characters"),
-    passwordConfirm: z.string(),
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    message: "Passwords do not match",
-    path: ["passwordConfirm"], // show error on confirm field
-  });
+const schema = z.object({
+  username: z.string().min(3, "Username must be at least 3 characters"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+});
 
 type FormValues = z.infer<typeof schema>;
 
-const EmployeeLoginSetup = () => {
+const EmployeeLogin = () => {
   const [submitted, setSubmitted] = useState(false);
-  const [searchParams] = useSearchParams();
-  const token = searchParams.get("token");
-  const employeeId = searchParams.get("id");
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [loginErr, setLoginErr] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -43,41 +34,30 @@ const EmployeeLoginSetup = () => {
     reset,
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
   const navigate = useNavigate();
+
   // Submit form
   const onSubmit = async (data: FormValues) => {
     setSubmitted(false);
-    setApiError(null);
+    setLoginErr(null);
 
     try {
       // Gọi API backend
       const res = await employeeAPI.post("/setup-employee", {
-        token,
-        employeeId,
         username: data.username,
         password: data.password,
       });
 
       if (res.data.success) {
         setSubmitted(true);
-        navigate("/employee-login");
       } else {
-        setApiError(res.data.msg || "Something went wrong, please try again.");
+        setLoginErr(res.data.msg || "Something went wrong, please try again.");
       }
     } catch (err) {
       if (err instanceof Error) {
-        setApiError(
-          "Can not sent code: " +
-            (err.message || " Something went wrong, please try again!")
-        );
+        setLoginErr(err.message || " Something went wrong, please try again.!");
       }
     }
   };
-
-  if (!token || !employeeId) {
-    return (
-      <div className="text-center text-red-500 mt-10">Invalid setup link!</div>
-    );
-  }
 
   return (
     <div className="min-h-screen flex items-center justify-center">
@@ -126,27 +106,13 @@ const EmployeeLoginSetup = () => {
                   </span>
                 )}
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="password-confirm">Confirm Password</Label>
-                <Input
-                  id="password-confirm"
-                  type="password"
-                  placeholder="Confirm your password"
-                  {...register("passwordConfirm")}
-                  autoComplete="new-password"
-                />
-                {errors.passwordConfirm && (
-                  <span className="text-sm text-red-500">
-                    {errors.passwordConfirm.message}
-                  </span>
-                )}
-              </div>
+
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Submitting..." : "Create"}
+                {isSubmitting ? "Submitting..." : "Login"}
               </Button>
               {submitted && (
                 <div className="text-green-500 text-center mt-2">
-                  Setup successful!
+                  Login successful!
                 </div>
               )}
             </form>
@@ -157,4 +123,4 @@ const EmployeeLoginSetup = () => {
   );
 };
 
-export default EmployeeLoginSetup;
+export default EmployeeLogin;

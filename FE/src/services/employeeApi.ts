@@ -2,12 +2,11 @@
 import axios from "axios";
 
 const employeeAPI = axios.create({
-  baseURL: import.meta.env.VITE_BASEURL,
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
-console.log("Employee API Base URL:", import.meta.env.VITE_BASEURL);
-console.log(import.meta.env.VITE_SOME_KEY); // "123"
+console.log("Employee API Base URL:", import.meta.env.VITE_API_URL);
 
 export default employeeAPI;

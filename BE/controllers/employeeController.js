@@ -113,7 +113,7 @@ exports.getEmployee = async (req, res) => {
   res.json(doc.data());
 };
 
-async function setupEmployeeAccount(req, res) {
+exports.setupEmployeeAccount = async (req, res) => {
   const { token, username, password } = req.body;
 
   // 1. Tìm employee theo token (token này phải lưu vào DB khi tạo employee)
@@ -138,10 +138,10 @@ async function setupEmployeeAccount(req, res) {
   );
 
   res.json({ success: true });
-}
+};
 
 // POST /api/employee-login
-async function employeeLogin(req, res) {
+exports.employeeLogin = async (req, res) => {
   const { username, password } = req.body;
   const employee = await db.collection("employees").findOne({ username });
   if (!employee)
@@ -165,7 +165,7 @@ async function employeeLogin(req, res) {
     employeeId: employee.employeeId,
     role: "employee",
   });
-}
+};
 
 exports.setupEmployeeAccount = async (req, res) => {
   const { employeeId, username, password } = req.body;

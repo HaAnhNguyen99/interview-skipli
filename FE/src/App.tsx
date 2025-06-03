@@ -4,6 +4,8 @@ import SignIn from "./pages/SignIn";
 import { UserProvider } from "./context/UserContext";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import EmployeeLoginSetup from "./components/EmployeeLoginSetup";
+import EmployeeLogin from "./components/EmployeeLogin";
+import OTPVerify from "./components/OTPVerify";
 
 function App() {
   return (
@@ -21,6 +23,8 @@ function App() {
             />
             <Route path="/signin" element={<SignIn />} />
             <Route path="/employee-setup" element={<EmployeeLoginSetup />} />
+            <Route path="/employee-login" element={<EmployeeLogin />} />
+            <Route path="/otp-verify" element={<OTPVerify />} />
           </Routes>
         </BrowserRouter>
       </UserProvider>
