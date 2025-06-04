@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 
 // Zod schema cho số điện thoại
 const phoneSchema = z.object({
@@ -24,6 +24,7 @@ const LoginPhone = ({
 }) => {
   const [msg, setMsg] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const [isSendOTP, setIsSendOTP] = useState<boolean>(false);
 
   // Form nhập SĐT
   const {
@@ -32,7 +33,6 @@ const LoginPhone = ({
     formState: { errors: phoneErrors },
   } = useForm<PhoneForm>({ resolver: zodResolver(phoneSchema) });
 
-  // Gửi mã
   const onSendPhone = async (data: PhoneForm) => {
     setLoading(true);
     setMsg("");
@@ -40,15 +40,22 @@ const LoginPhone = ({
     if (normalizedPhone.startsWith("0") && normalizedPhone.length >= 10) {
       normalizedPhone = "84" + normalizedPhone.slice(1);
     }
-    console.log(normalizedPhone);
     try {
       await sendAccessCode(normalizedPhone);
       setPhone(normalizedPhone);
       setStep(2);
       setMsg("Code sent successfully! Please check your phone.");
+      localStorage.setItem("send_OTP", "true");
+      localStorage.setItem("phone", normalizedPhone);
     } catch (err) {
-      if (err instanceof Error || err instanceof AxiosError) {
-        setMsg(err.response?.data?.msg || " Network Error!");
+      if (axios.isAxiosError(err)) {
+        setMsg(
+          err.response?.data?.msg || "Something went wrong, please try again!"
+        );
+
+        if (err.status === 400) {
+          setIsSendOTP(true);
+        }
       }
     }
     setLoading(false);
@@ -56,7 +63,7 @@ const LoginPhone = ({
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="border border-gray-300 rounded-md p-4 h-fit px-10 py-8">
+      <div className="border w-full max-w-md border-gray-300 rounded-md p-4 h-fit px-10 py-8">
         <form
           onSubmit={handleSubmitPhone(onSendPhone)}
           className="space-y-7 text-center">
@@ -79,7 +86,9 @@ const LoginPhone = ({
         </form>
 
         {phoneErrors.phone && (
-          <div style={{ color: "red" }}>{phoneErrors.phone.message}</div>
+          <div className="text-red-500 text-center">
+            {phoneErrors.phone.message}
+          </div>
         )}
 
         <div
@@ -88,11 +97,20 @@ const LoginPhone = ({
           }`}>
           {msg}
         </div>
-        <p className="text-neutral-400 mt-10">
-          Don't having account?
-          <a href="#" className="text-blue-500">
-            Sign Up
-          </a>
+        <p className="text-neutral-400 mt-10 flex justify-between">
+          <div>
+            Don't having account?{" "}
+            <a href="#" className="text-blue-500">
+              Sign Up
+            </a>
+          </div>
+          {isSendOTP && (
+            <div
+              className="text-blue-500 underline cursor-pointer active:scale-[0.98] transition-all duration-150"
+              onClick={() => setStep(2)}>
+              Verify code
+            </div>
+          )}
         </p>
       </div>
     </div>

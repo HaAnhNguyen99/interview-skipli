@@ -1,8 +1,9 @@
 import { useUser } from "@/context/UserContext";
-import { verifyAccessCode } from "@/services/authService";
+import { resendAccessCode, verifyAccessCode } from "@/services/authService";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Backbtn from "./commons/Backbtn";
+import axios from "axios";
 const OTP_LENGTH = 6;
 const OTPVerify = ({
   setStep,
@@ -54,6 +55,14 @@ const OTPVerify = ({
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const val = e.clipboardData.getData("text/plain");
+    if (val.length === OTP_LENGTH) {
+      setValues(val.split(""));
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -67,6 +76,9 @@ const OTPVerify = ({
     try {
       const res = await verifyAccessCode(phone, otp);
       if (res.data.success) {
+        localStorage.removeItem("send_OTP");
+        localStorage.removeItem("phone");
+
         login({
           token: res.data.token,
           phoneNumber: res.data.phoneNumber,
@@ -78,11 +90,22 @@ const OTPVerify = ({
         setError("Sai mã truy cập!");
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setError("Wrong code or expired code. " + (err.message || ""));
+      if (axios.isAxiosError(err)) {
+        setError("Wrong code or expired code");
       }
     }
     setLoading(false);
+  };
+
+  const handleResend = async () => {
+    try {
+      await resendAccessCode(phone);
+      setError("Mã truy cập đã được gửi lại!");
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError("Failed to resend access code");
+      }
+    }
   };
   return (
     <div>
@@ -115,6 +138,7 @@ const OTPVerify = ({
                       ref={(el) => {
                         inputs.current[i] = el;
                       }}
+                      onPaste={handlePaste}
                       onChange={(e) => handleChange(i, e)}
                       onKeyDown={(e) => handleKeyDown(i, e)}
                     />
@@ -129,7 +153,7 @@ const OTPVerify = ({
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150">
+                    className="active:scale-[0.98] w-full inline-flex justify-center whitespace-nowrap rounded-lg bg-indigo-500 px-3.5 py-2.5 text-sm font-medium text-white shadow-sm shadow-indigo-950/10 hover:bg-indigo-600 focus:outline-none focus:ring focus:ring-indigo-300 focus-visible:outline-none focus-visible:ring focus-visible:ring-indigo-300 transition-colors duration-150">
                     {loading ? "Verifying..." : "Verify Account"}
                   </button>
                 </div>
@@ -144,8 +168,8 @@ const OTPVerify = ({
                 <div>
                   Didn't receive code?{" "}
                   <a
-                    className="font-medium text-indigo-500 hover:text-indigo-600"
-                    href="#0">
+                    className="font-medium hover:cursor-pointer active:scale-[0.98] transition-all duration-150 text-indigo-500 hover:text-indigo-600"
+                    onClick={handleResend}>
                     Resend
                   </a>
                 </div>

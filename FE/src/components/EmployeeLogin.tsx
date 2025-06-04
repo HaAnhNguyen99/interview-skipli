@@ -14,6 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginEmployee } from "@/services/employeeApi";
+import axios from "axios";
 
 // 1. Định nghĩa Zod schema validate
 const schema = z.object({
@@ -24,7 +25,6 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 const EmployeeLogin = () => {
-  const [submitted, setSubmitted] = useState(false);
   const [loginErr, setLoginErr] = useState<string | null>(null);
   const {
     register,
@@ -35,7 +35,6 @@ const EmployeeLogin = () => {
 
   // Submit form
   const onSubmit = async (data: FormValues) => {
-    setSubmitted(false);
     setLoginErr(null);
 
     try {
@@ -44,13 +43,14 @@ const EmployeeLogin = () => {
 
       if (res.data.success) {
         navigate("/employee/dashboard");
-        setSubmitted(true);
       } else {
         setLoginErr(res.data.msg || "Invalid username or password");
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setLoginErr(err.message || "Something went wrong, please try again!");
+      if (axios.isAxiosError(err)) {
+        setLoginErr(
+          err.response?.data?.msg || "Something went wrong, please try again!"
+        );
       }
     }
   };
@@ -106,10 +106,9 @@ const EmployeeLogin = () => {
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Submitting..." : "Login"}
               </Button>
-              {submitted && (
-                <div className="text-green-500 text-center mt-2">
-                  Login successful!
-                </div>
+
+              {loginErr && (
+                <span className="text-sm text-red-500">{loginErr}</span>
               )}
             </form>
           </CardContent>

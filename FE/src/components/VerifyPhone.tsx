@@ -6,6 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Backbtn from "./commons/Backbtn";
 import { useUser } from "@/context/UserContext";
+import type { AxiosError } from "axios";
+import axios from "axios";
 
 // Zod schema cho OTP
 const otpSchema = z.object({
@@ -59,8 +61,10 @@ const VerifyPhone = ({
         setMsg("Sai mã truy cập!");
       }
     } catch (err) {
-      if (err instanceof Error) {
-        setMsg("Wrong code or expired code. " + (err.message || ""));
+      if (axios.isAxiosError(err)) {
+        setMsg(
+          err.response?.data?.msg || "Something went wrong, please try again!"
+        );
       }
     }
     setLoading(false);

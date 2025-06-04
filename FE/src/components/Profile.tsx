@@ -13,10 +13,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User } from "lucide-react";
 import { Button } from "./ui/button";
+import { useUser } from "@/context/UserContext";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
-
+  const { user } = useUser();
   return (
     <>
       {/* Custom item thay vì DropdownMenuItem */}
@@ -48,19 +49,21 @@ const Profile = () => {
                 <Input
                   id="phone-number"
                   name="phone-number"
-                  defaultValue="09..."
+                  defaultValue={user?.phoneNumber}
                   type="text"
                 />
               </div>
-              <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  defaultValue="example@gmail.com"
-                  type="email"
-                />
-              </div>
+              {user?.role === "employee" && (
+                <div className="grid gap-3">
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    defaultValue={user?.email}
+                    type="email"
+                  />
+                </div>
+              )}
             </div>
             <DialogFooter className="mt-4">
               <DialogClose asChild>

@@ -26,7 +26,7 @@ router.post("/validate-access-code", controller.validateAccessCode);
  * @route   POST /api/create-employee
  * @desc    Create a new employee and save to the "employees" collection.
  *          After creation, send an email to the employee.
- * @body    { name: "Employee Name", email: "Email", department: "Department" }
+ * @body    { name: "Employee Name", email: "Email", phoneNumber: "Phone Number", role: "Role" }
  * @return  { success: true, employeeId: "new id" }
  */
 router.post(
@@ -50,10 +50,22 @@ router.post(
 );
 
 /**
- * @route   POST /api/get-employee
+ * @route   GET /api/get-all-employees
+ * @desc    Get all employees' information.
+ * @return  { success: true, employees: [{ name, email, phoneNumber, role, ... }] }
+ */
+router.get(
+  "/get-all-employees",
+  authMiddleware,
+  managerOnly,
+  controller.getAllEmployees
+);
+
+/**
+ * @route   GET /api/get-employee
  * @desc    Get an employee's information by employeeId (for profile/detail, etc).
  * @body    { employeeId: "EMPLOYEE ID" }
- * @return  { name, email, department, ... }
+ * @return  { name, email, phoneNumber, role, ... }
  */
 router.get(
   "/get-employee",
@@ -78,4 +90,37 @@ router.post("/setup-employee", controller.setupEmployeeAccount);
  */
 router.post("/login-employee", controller.employeeLogin);
 
+/**
+ * @route   POST /api/employee-delete
+ * @desc    Delete an employee from the "employees" collection by employeeId.
+ * @body    { employeeId: "EMPLOYEE ID" }
+ * @return  { success: true }
+ */
+router.delete(
+  "/employee-delete/:employeeId",
+  authMiddleware,
+  managerOnly,
+  controller.deleteEmployee
+);
+
+/**
+ * @route   POST /api/employee-update
+ * @desc    Update an employee's information by employeeId.
+ * @body    { employeeId: "EMPLOYEE ID", name: "Employee Name", email: "Email", phoneNumber: "Phone Number", role: "Role" }
+ * @return  { success: true }
+ */
+router.put(
+  "/employee-update/:employeeId",
+  authMiddleware,
+  managerOnly,
+  controller.updateEmployee
+);
+
+/**
+ * @route   POST /api/resend-access-code
+ * @desc    Resend access code to the employee's phone number.
+ * @body    { phoneNumber: "PHONE NUMBER" }
+ * @return  { success: true, msg: "Resent existing access code!" }
+ */
+router.post("/resend-access-code", controller.resendAccessCode);
 module.exports = router;

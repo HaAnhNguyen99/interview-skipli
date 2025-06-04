@@ -14,11 +14,11 @@ import logo from "@/assets/logo.webp";
 const items = [
   {
     title: "Manage Employee",
-    url: "/employees",
+    url: "/admin/dashboard",
   },
   {
     title: "Manage Task",
-    url: "/tasks",
+    url: "/admin/tasks",
   },
   {
     title: "Message",

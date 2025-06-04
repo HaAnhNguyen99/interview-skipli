@@ -8,3 +8,6 @@ export const sendAccessCode = (phoneNumber: string) =>
 
 export const verifyAccessCode = (phoneNumber: string, accessCode: string) =>
   axios.post(baseURL + "validate-access-code", { phoneNumber, accessCode });
+
+export const resendAccessCode = (phoneNumber: string) =>
+  axios.post(baseURL + "resend-access-code", { phoneNumber });

@@ -15,6 +15,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { setupEmployee } from "@/services/employeeApi";
+import axios from "axios";
 
 // 1. Định nghĩa Zod schema validate
 const schema = z
@@ -45,7 +46,9 @@ const EmployeeLoginSetup = () => {
 
   if (!token || !employeeId) {
     return (
-      <div className="text-center text-red-500 mt-10">Invalid setup link!</div>
+      <div className="text-center text-red-500 text-6xl font-extrabold flex justify-center items-center h-screen tracking-tight ">
+        Invalid setup link!
+      </div>
     );
   }
 
@@ -71,10 +74,9 @@ const EmployeeLoginSetup = () => {
         setLoginErr(res.data.msg || "Something went wrong, please try again.");
       }
     } catch (err) {
-      if (err instanceof Error) {
+      if (axios.isAxiosError(err)) {
         setLoginErr(
-          "Can not sent code: " +
-            (err.message || " Something went wrong, please try again!")
+          err.response?.data?.msg || "Something went wrong, please try again!"
         );
       }
     }

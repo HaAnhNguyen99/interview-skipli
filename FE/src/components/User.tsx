@@ -1,22 +1,19 @@
-import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuPortal,
   DropdownMenuSeparator,
   DropdownMenuShortcut,
-  DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import avt from "@/assets/avt.png";
 import Profile from "./Profile";
+import { useUser } from "@/context/UserContext";
 
 const User = () => {
+  const { logout } = useUser();
   return (
     <div>
       <DropdownMenu>
@@ -32,7 +29,7 @@ const User = () => {
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
 
-          <DropdownMenuItem>
+          <DropdownMenuItem onClick={() => logout()}>
             Log out
             <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
           </DropdownMenuItem>

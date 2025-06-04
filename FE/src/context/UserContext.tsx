@@ -1,9 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 
 type User = {
   phoneNumber: string;
   role: string;
   token: string;
+  email?: string;
 };
 
 type UserContextType = {
@@ -31,6 +32,7 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("token", user.token);
     localStorage.setItem("phoneNumber", user.phoneNumber);
     localStorage.setItem("role", user.role);
+    localStorage.setItem("email", user.email || "");
   };
 
   // Khi logout, xoá context + localStorage
