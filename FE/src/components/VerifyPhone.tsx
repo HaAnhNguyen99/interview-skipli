@@ -54,7 +54,7 @@ const VerifyPhone = ({
           role: res.data.role,
         });
         setMsg("Đăng nhập thành công!");
-        navigate("/dashboard");
+        navigate("/admin/dashboard");
       } else {
         setMsg("Sai mã truy cập!");
       }

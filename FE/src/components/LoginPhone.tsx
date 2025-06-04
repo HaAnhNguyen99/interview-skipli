@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
+import { AxiosError } from "axios";
 
 // Zod schema cho số điện thoại
 const phoneSchema = z.object({
@@ -46,8 +47,8 @@ const LoginPhone = ({
       setStep(2);
       setMsg("Code sent successfully! Please check your phone.");
     } catch (err) {
-      if (err instanceof Error) {
-        setMsg("Can not sent code: " + (err.message || " Network Error!"));
+      if (err instanceof Error || err instanceof AxiosError) {
+        setMsg(err.response?.data?.msg || " Network Error!");
       }
     }
     setLoading(false);

@@ -14,7 +14,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import employeeAPI from "@/services/employeeApi";
+import { setupEmployee } from "@/services/employeeApi";
 
 // 1. Định nghĩa Zod schema validate
 const schema = z
@@ -35,49 +35,50 @@ const EmployeeLoginSetup = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const employeeId = searchParams.get("id");
-  const [apiError, setApiError] = useState<string | null>(null);
+  const [LoginErr, setLoginErr] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
   const navigate = useNavigate();
-  // Submit form
-  const onSubmit = async (data: FormValues) => {
-    setSubmitted(false);
-    setApiError(null);
-
-    try {
-      // Gọi API backend
-      const res = await employeeAPI.post("/setup-employee", {
-        token,
-        employeeId,
-        username: data.username,
-        password: data.password,
-      });
-
-      if (res.data.success) {
-        setSubmitted(true);
-        navigate("/employee-login");
-      } else {
-        setApiError(res.data.msg || "Something went wrong, please try again.");
-      }
-    } catch (err) {
-      if (err instanceof Error) {
-        setApiError(
-          "Can not sent code: " +
-            (err.message || " Something went wrong, please try again!")
-        );
-      }
-    }
-  };
 
   if (!token || !employeeId) {
     return (
       <div className="text-center text-red-500 mt-10">Invalid setup link!</div>
     );
   }
+
+  // Submit form
+  const onSubmit = async (data: FormValues) => {
+    setSubmitted(false);
+    setLoginErr(null);
+
+    try {
+      // Gọi API backend
+
+      const res = await setupEmployee(
+        token,
+        employeeId,
+        data.username,
+        data.password
+      );
+
+      if (res.data.success) {
+        setSubmitted(true);
+        navigate("/employee/login");
+      } else {
+        setLoginErr(res.data.msg || "Something went wrong, please try again.");
+      }
+    } catch (err) {
+      if (err instanceof Error) {
+        setLoginErr(
+          "Can not sent code: " +
+            (err.message || " Something went wrong, please try again!")
+        );
+      }
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center">

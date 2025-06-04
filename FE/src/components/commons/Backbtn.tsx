@@ -1,11 +1,19 @@
 import { MoveLeft } from "lucide-react";
 
-const Backbtn = ({ action }: { action: () => void }) => {
+const Backbtn = ({
+  action,
+  className,
+}: {
+  action: () => void;
+  className?: string;
+}) => {
   return (
     <button
-      className="flex items-center gap-2 text-black hover:text-gray-700 transition-colors"
+      className={`transition-all duration-400 flex items-center gap-2 border-1 border-transparent hover:text-gray-700 transition-colors hover:cursor-pointer hover:border-b hover:border-b-gray-700 box-content ${
+        className ? className : ""
+      }`}
       onClick={action}>
-      <MoveLeft />
+      <MoveLeft className={`${className ? className : ""}`} />
       <p>Back</p>
     </button>
   );

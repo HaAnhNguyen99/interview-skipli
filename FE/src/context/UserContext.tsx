@@ -15,17 +15,15 @@ type UserContextType = {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-
-  // Lấy user từ localStorage nếu đã login trước đó
-  useEffect(() => {
+  const [user, setUser] = useState<User | null>(() => {
     const token = localStorage.getItem("token");
     const phoneNumber = localStorage.getItem("phoneNumber");
     const role = localStorage.getItem("role");
     if (token && phoneNumber && role) {
-      setUser({ token, phoneNumber, role });
+      return { token, phoneNumber, role };
     }
-  }, []);
+    return null;
+  });
 
   // Khi login, lưu vào context + localStorage
   const login = (user: User) => {

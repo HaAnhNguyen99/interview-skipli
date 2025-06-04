@@ -1,4 +1,3 @@
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -13,8 +12,8 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import employeeAPI from "@/services/employeeApi";
+import { useNavigate } from "react-router-dom";
+import { loginEmployee } from "@/services/employeeApi";
 
 // 1. Định nghĩa Zod schema validate
 const schema = z.object({
@@ -31,7 +30,6 @@ const EmployeeLogin = () => {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    reset,
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
   const navigate = useNavigate();
 
@@ -42,19 +40,17 @@ const EmployeeLogin = () => {
 
     try {
       // Gọi API backend
-      const res = await employeeAPI.post("/setup-employee", {
-        username: data.username,
-        password: data.password,
-      });
+      const res = await loginEmployee(data.username, data.password);
 
       if (res.data.success) {
+        navigate("/employee/dashboard");
         setSubmitted(true);
       } else {
-        setLoginErr(res.data.msg || "Something went wrong, please try again.");
+        setLoginErr(res.data.msg || "Invalid username or password");
       }
     } catch (err) {
       if (err instanceof Error) {
-        setLoginErr(err.message || " Something went wrong, please try again.!");
+        setLoginErr(err.message || "Something went wrong, please try again!");
       }
     }
   };

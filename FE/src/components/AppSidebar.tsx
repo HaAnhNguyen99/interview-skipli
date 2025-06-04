@@ -9,6 +9,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
+import logo from "@/assets/logo.webp";
 
 const items = [
   {
@@ -31,7 +32,9 @@ const AppSidebar = () => {
 
   return (
     <Sidebar>
-      <SidebarHeader />
+      <SidebarHeader className="mx-auto mb-6">
+        <img src={logo} alt="logo" className="w-20 h-20" />
+      </SidebarHeader>
       <SidebarContent>
         <SidebarGroupContent>
           <SidebarMenu>
@@ -45,7 +48,7 @@ const AppSidebar = () => {
                       isActive
                         ? "bg-blue-100 border-r-4 border-blue-500"
                         : "bg-transparent border-r-4 border-transparent hover:bg-blue-50"
-                    }`}
+                    } cursor-pointer`}
                     onClick={() => navigate(item.url)}>
                     <span>{item.title}</span>
                   </SidebarMenuButton>

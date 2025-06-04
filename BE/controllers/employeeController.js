@@ -11,13 +11,20 @@ exports.createNewAccessCode = async (req, res) => {
   const { phoneNumber } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000).toString();
 
-  // Save access code to DB...
+  const docRef = admin.firestore().collection("managers").doc(phoneNumber);
+  const doc = await docRef.get();
+  if (!doc.exists) {
+    return res.status(400).json({
+      success: false,
+      msg: "Phone number is not registered as manager!",
+    });
+  }
+
   await db
     .collection("accessCodes")
     .doc(phoneNumber)
     .set({ code, createdAt: Date.now() });
 
-  // Send SMS with Vonage
   try {
     // await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
     res.json({ success: true });
@@ -38,8 +45,6 @@ exports.validateAccessCode = async (req, res) => {
   const { code } = doc.data();
   if (code !== accessCode)
     return res.status(400).json({ success: false, msg: "Invalid code" });
-
-  console.log("Request phone number: ", phoneNumber);
 
   // Xóa code
   await db.collection("accessCodes").doc(phoneNumber).delete();
@@ -70,13 +75,13 @@ exports.createEmployee = async (req, res) => {
       email,
       department,
       createdAt: Date.now(),
-      setupToken, // LƯU TOKEN vào DB để sau xác thực link
+      setupToken,
       role: "employee",
     });
 
     // 3. Tạo link FE cho employee setup tài khoản
     const feUrl = process.env.FE_URL || "http://localhost:5173";
-    const setupLink = `${feUrl}/employee-setup?token=${setupToken}&id=${newDoc.id}`;
+    const setupLink = `${feUrl}/employee/setup?token=${setupToken}&id=${newDoc.id}`;
 
     // 4. Gửi email cho employee (có kèm link)
     await sendMail(
@@ -143,9 +148,19 @@ exports.setupEmployeeAccount = async (req, res) => {
 // POST /api/employee-login
 exports.employeeLogin = async (req, res) => {
   const { username, password } = req.body;
-  const employee = await db.collection("employees").findOne({ username });
-  if (!employee)
+
+  // Tìm document có username trùng khớp
+  const snapshot = await db
+    .collection("employees")
+    .where("username", "==", username)
+    .get();
+
+  if (snapshot.empty)
     return res.status(400).json({ success: false, msg: "User not found" });
+
+  // Lấy document đầu tiên
+  const doc = snapshot.docs[0];
+  const employee = doc.data();
 
   // Kiểm tra password
   const match = await bcrypt.compare(password, employee.passwordHash);
@@ -154,7 +169,7 @@ exports.employeeLogin = async (req, res) => {
 
   // Tạo JWT cho employee
   const token = jwt.sign(
-    { employeeId: employee.employeeId, role: "employee" },
+    { employeeId: doc.id, role: employee.role },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
@@ -162,8 +177,8 @@ exports.employeeLogin = async (req, res) => {
   res.json({
     success: true,
     token,
-    employeeId: employee.employeeId,
-    role: "employee",
+    employeeId: doc.id,
+    role: employee.role,
   });
 };
 
@@ -181,7 +196,7 @@ exports.setupEmployeeAccount = async (req, res) => {
     await docRef.update({
       username,
       passwordHash,
-      setupToken: admin.firestore.FieldValue.delete(), // Xoá setupToken nếu có
+      setupToken: admin.firestore.FieldValue.delete(),
     });
 
     res.json({ success: true });
