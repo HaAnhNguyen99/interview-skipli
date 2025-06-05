@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginEmployee } from "@/services/employeeApi";
 import axios from "axios";
@@ -26,6 +26,7 @@ type FormValues = z.infer<typeof schema>;
 
 const EmployeeLogin = () => {
   const [loginErr, setLoginErr] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const {
     register,
     handleSubmit,
@@ -54,6 +55,20 @@ const EmployeeLogin = () => {
       }
     }
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+  }, []);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center text-2xl">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center">

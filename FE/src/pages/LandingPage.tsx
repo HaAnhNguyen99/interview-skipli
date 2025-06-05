@@ -8,7 +8,7 @@ const LandingPage = () => {
       <Button variant="outline" onClick={() => navigate("/signin")}>
         Login
       </Button>
-      <Button variant="default" onClick={() => navigate("/signup")}>
+      <Button variant="default" onClick={() => navigate("/employee/login")}>
         Signup
       </Button>
     </div>

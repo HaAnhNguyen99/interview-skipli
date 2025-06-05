@@ -38,8 +38,16 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/employee/setup" element={<EmployeeLoginSetup />} />
             <Route path="/employee/login" element={<EmployeeLogin />} />
-            <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
-            <Route path="/employee/dashboard" element={<EmployeeDashboard />} />
+            <Route
+              path="/employee/dashboard"
+              element={
+                <ProtectedRoute>
+                  <LayoutDashboard>
+                    <EmployeeDashboard />
+                  </LayoutDashboard>
+                </ProtectedRoute>
+              }
+            />
           </Routes>
         </BrowserRouter>
       </UserProvider>

@@ -53,6 +53,7 @@ exports.createNewAccessCode = async (req, res) => {
 exports.validateAccessCode = async (req, res) => {
   const { phoneNumber, accessCode } = req.body;
   const doc = await db.collection("accessCodes").doc(phoneNumber).get();
+  console.log(doc.data());
   if (!doc.exists)
     return res.status(404).json({ success: false, msg: "No code found" });
 
@@ -174,8 +175,7 @@ exports.createEmployee = async (req, res) => {
         Email: ${email}
         Role: ${role}
 
-        Please click the link below to set your password: ${setupLink}
-      `
+        Please click the link below to set your password: ${setupLink} `
     );
 
     res.json({ success: true, employeeId: newDoc.id });
@@ -246,33 +246,6 @@ exports.getEmployee = async (req, res) => {
   res.json(doc.data());
 };
 
-exports.setupEmployeeAccount = async (req, res) => {
-  const { token, username, password } = req.body;
-
-  // 1. Tìm employee theo token (token này phải lưu vào DB khi tạo employee)
-  const employee = await db
-    .collection("employees")
-    .findOne({ setupToken: token });
-  if (!employee)
-    return res
-      .status(400)
-      .json({ success: false, msg: "Invalid or expired token" });
-
-  // 2. Hash password
-  const passwordHash = await bcrypt.hash(password, 10);
-
-  // 3. Update DB: lưu username, passwordHash, xoá setupToken (không dùng lại)
-  await db.collection("employees").updateOne(
-    { setupToken: token },
-    {
-      $set: { username, passwordHash },
-      $unset: { setupToken: "" },
-    }
-  );
-
-  res.json({ success: true });
-};
-
 // POST /api/employee-login
 exports.employeeLogin = async (req, res) => {
   const { username, password } = req.body;
@@ -309,22 +282,40 @@ exports.employeeLogin = async (req, res) => {
     role: employee.role,
   });
 };
-
 // POST /api/employee-setup
 exports.setupEmployeeAccount = async (req, res) => {
-  const { employeeId, username, password } = req.body;
-  // Tìm employee theo employeeId, có thể xác thực setupToken nếu muốn bảo mật hơn
+  const { employeeId, username, password, token } = req.body;
 
   try {
-    const docRef = admin.firestore().collection("employees").doc(employeeId);
+    const usernameSnap = await db
+      .collection("employees")
+      .where("username", "==", username)
+      .get();
+
+    if (!usernameSnap.empty) {
+      return res.status(400).json({
+        success: false,
+        msg: "Username already exists. Please choose another one.",
+      });
+    }
+
+    const empDocRef = db.collection("employees").doc(employeeId);
+    const empDoc = await empDocRef.get();
+
+    // Check tồn tại và đúng token
+    if (!empDoc.exists || empDoc.data().setupToken !== token) {
+      return res
+        .status(400)
+        .json({ success: false, msg: "Invalid or expired token" });
+    }
 
     // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
     // Update Firestore: set username, passwordHash, xoá setupToken
-    await docRef.update({
-      username,
-      passwordHash,
+    const resp = await empDocRef.update({
+      username: username,
+      passwordHash: passwordHash,
       setupToken: admin.firestore.FieldValue.delete(),
     });
 

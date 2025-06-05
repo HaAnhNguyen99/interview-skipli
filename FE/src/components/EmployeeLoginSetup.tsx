@@ -36,7 +36,7 @@ const EmployeeLoginSetup = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
   const employeeId = searchParams.get("id");
-  const [LoginErr, setLoginErr] = useState<string | null>(null);
+  const [loginErr, setLoginErr] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -59,7 +59,6 @@ const EmployeeLoginSetup = () => {
 
     try {
       // Gọi API backend
-
       const res = await setupEmployee(
         token,
         employeeId,
@@ -75,9 +74,13 @@ const EmployeeLoginSetup = () => {
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setLoginErr(
-          err.response?.data?.msg || "Something went wrong, please try again!"
-        );
+        if (err.status === 400) {
+          setLoginErr(err.response?.data?.msg);
+        } else {
+          setLoginErr(
+            err.response?.data?.msg || "Something went wrong, please try again!"
+          );
+        }
       }
     }
   };
@@ -154,6 +157,9 @@ const EmployeeLoginSetup = () => {
               )}
             </form>
           </CardContent>
+          {loginErr && (
+            <div className="text-red-500 text-center mt-2">{loginErr}</div>
+          )}
         </Card>
       </div>
     </div>
