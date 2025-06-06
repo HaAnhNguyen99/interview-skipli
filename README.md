@@ -43,3 +43,29 @@ Backend
 ![image](https://github.com/user-attachments/assets/cdf26f18-174a-4480-8541-700e1252e44f)
 
 
+### Features
+#### Authentication & Access Code
+
+- Manager login via SMS verification code (OTP).
+- Resend OTP code if needed.
+- Verify OTP
+
+#### Employee Management
+
+- Add new employees (by manager).
+- Send invitation emails for account setup to new employees.
+- Employee account setup: Create username and password via setup link.
+- Employee login.
+- View details, update, and delete employees.
+
+#### Task Management
+
+- Create, update, delete, and view task details.
+- Assign tasks to employees; manage tasks by employee.
+- Update task status and information.
+- List all tasks (filter by status/employee).
+- Dashboard: View all tasks assigned to an employee.
+
+#### Messaging
+
+- Send and receive messages between accounts real time. (Manager and Employees)
