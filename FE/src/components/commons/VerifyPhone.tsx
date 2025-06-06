@@ -25,7 +25,8 @@ const VerifyPhone = ({
   setStep: React.Dispatch<React.SetStateAction<number>>;
 }) => {
   const title = "Phone verification";
-  const desc = "Please enter your code that send to your phone";
+  const desc =
+    "Please enter your code that send to your phone, it may send a voice OTP to your phone";
   const btnTitle = "Submit";
   const label = "Code not receive?";
   const actionLabel = "Send again";
@@ -88,7 +89,7 @@ const VerifyPhone = ({
           {otpErrors.otp && (
             <div style={{ color: "red" }}>{otpErrors.otp.message}</div>
           )}
-
+          {error && <div style={{ color: "red" }}>{error}</div>}
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-md w-full"
             type="submit"
