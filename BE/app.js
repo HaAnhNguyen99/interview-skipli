@@ -4,6 +4,9 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const employeeRoutes = require("./routes/employeeRoutes");
 const taskRoutes = require("./routes/taskRoutes");
+const http = require("http");
+const socketio = require("socket.io");
+
 const app = express();
 
 app.use(cors());
@@ -28,7 +31,6 @@ const onlineUsers = {};
 io.on("connection", (socket) => {
   console.log("User connected:", socket.id);
 
-  // Nhận sự kiện join với userId
   socket.on("join", (userId) => {
     onlineUsers[userId] = socket.id;
   });
