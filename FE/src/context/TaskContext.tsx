@@ -18,7 +18,6 @@ export const TaskProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Hook để dùng context
 export const useTask = () => {
   const ctx = useContext(TaskContext);
   if (!ctx) throw new Error("useTask must be used within TaskProvider");

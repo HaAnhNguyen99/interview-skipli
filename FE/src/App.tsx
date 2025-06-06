@@ -11,7 +11,9 @@ import Dashboard from "./components/admin/Dashboard";
 import { ManagerRoute } from "./routes/ManagerRoute";
 import ManageTask from "./components/admin/ManageTask";
 import { TaskProvider } from "./context/TaskContext";
-import Messages from "./components/commons/Messages";
+import Messages from "./pages/Messages";
+import LayoutChat from "./layouts/LayoutChat";
+import { ChatProvider } from "./context/ChatConText";
 const ROUTES = {
   HOME: "/",
   ADMIN: {
@@ -27,7 +29,6 @@ const ROUTES = {
   },
 };
 
-// Route configuration
 const routeConfig = [
   {
     path: ROUTES.HOME,
@@ -86,7 +87,11 @@ const routeConfig = [
     element: (
       <ProtectedRoute>
         <LayoutDashboard>
-          <Messages />
+          <ChatProvider>
+            <LayoutChat>
+              <Messages />
+            </LayoutChat>
+          </ChatProvider>
         </LayoutDashboard>
       </ProtectedRoute>
     ),

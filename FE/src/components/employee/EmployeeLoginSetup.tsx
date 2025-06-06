@@ -17,7 +17,6 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { setupEmployee } from "@/services/employeeApi";
 import axios from "axios";
 
-// 1. Định nghĩa Zod schema validate
 const schema = z
   .object({
     username: z.string().min(3, "Username must be at least 3 characters"),
@@ -26,7 +25,6 @@ const schema = z
   })
   .refine((data) => data.password === data.passwordConfirm, {
     message: "Passwords do not match",
-    path: ["passwordConfirm"], // show error on confirm field
   });
 
 type FormValues = z.infer<typeof schema>;
@@ -52,13 +50,11 @@ const EmployeeLoginSetup = () => {
     );
   }
 
-  // Submit form
   const onSubmit = async (data: FormValues) => {
     setSubmitted(false);
     setLoginErr(null);
 
     try {
-      // Gọi API backend
       const res = await setupEmployee(
         token,
         employeeId,

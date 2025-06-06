@@ -5,7 +5,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import axios, { AxiosError } from "axios";
 
-// Zod schema cho số điện thoại
 const phoneSchema = z.object({
   phone: z
     .string()
@@ -26,7 +25,6 @@ const LoginPhone = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [isSendOTP, setIsSendOTP] = useState<boolean>(false);
 
-  // Form nhập SĐT
   const {
     register: registerPhone,
     handleSubmit: handleSubmitPhone,
@@ -98,12 +96,6 @@ const LoginPhone = ({
           {msg}
         </div>
         <p className="text-neutral-400 mt-10 flex justify-between">
-          <div>
-            Don't having account?{" "}
-            <a href="#" className="text-blue-500">
-              Sign Up
-            </a>
-          </div>
           {isSendOTP && (
             <div
               className="text-blue-500 underline cursor-pointer active:scale-[0.98] transition-all duration-150"

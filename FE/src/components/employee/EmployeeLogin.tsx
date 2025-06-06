@@ -16,8 +16,8 @@ import { useNavigate } from "react-router-dom";
 import { loginEmployee } from "@/services/employeeApi";
 import axios from "axios";
 import { useUser } from "@/context/UserContext";
+import Loading from "../commons/loading/loading";
 
-// 1. Định nghĩa Zod schema validate
 const schema = z.object({
   username: z.string().min(3, "Username must be at least 3 characters"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -36,12 +36,10 @@ const EmployeeLogin = () => {
   const navigate = useNavigate();
   const { login } = useUser();
 
-  // Submit form
   const onSubmit = async (data: FormValues) => {
     setLoginErr(null);
 
     try {
-      // Gọi API backend
       const res = await loginEmployee(data.username, data.password);
 
       const { employeeId, success, token, phoneNumber, role, email, name } =
@@ -76,7 +74,7 @@ const EmployeeLogin = () => {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center text-2xl">Loading...</div>
+        <Loading />
       </div>
     );
   }

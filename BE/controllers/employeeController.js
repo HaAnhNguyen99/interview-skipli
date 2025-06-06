@@ -6,7 +6,6 @@ const { sendSMS } = require("../services/smsService");
 const db = require("../services/firebaseService");
 const { sendMail } = require("../services/mailService");
 
-// Create access code for phone number
 exports.createNewAccessCode = async (req, res) => {
   const { phoneNumber } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000).toString();
@@ -40,7 +39,7 @@ exports.createNewAccessCode = async (req, res) => {
     .set({ code, createdAt: Date.now() });
 
   try {
-    // await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
+    await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
     res.json({ success: true });
   } catch (err) {
     res
@@ -49,7 +48,6 @@ exports.createNewAccessCode = async (req, res) => {
   }
 };
 
-// Validate access code
 exports.validateAccessCode = async (req, res) => {
   const { phoneNumber, accessCode } = req.body;
   const doc = await db.collection("accessCodes").doc(phoneNumber).get();
@@ -61,7 +59,6 @@ exports.validateAccessCode = async (req, res) => {
   if (code !== accessCode)
     return res.status(400).json({ success: false, msg: "Invalid code" });
 
-  // Xóa code
   await db.collection("accessCodes").doc(phoneNumber).delete();
 
   const role = process.env.ROLE_MANAGER;
@@ -76,7 +73,6 @@ exports.validateAccessCode = async (req, res) => {
   });
 };
 
-// Resend access code
 exports.resendAccessCode = async (req, res) => {
   const { phoneNumber } = req.body;
 
@@ -89,7 +85,6 @@ exports.resendAccessCode = async (req, res) => {
     });
   }
 
-  // Lấy access code hiện tại
   const accessCodeDoc = await db
     .collection("accessCodes")
     .doc(phoneNumber)
@@ -105,7 +100,7 @@ exports.resendAccessCode = async (req, res) => {
 
     if (Date.now() - createdAt < 5 * 60 * 1000) {
       try {
-        // await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
+        await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
         return res.json({ success: true, msg: "Resent existing access code!" });
       } catch (err) {
         return res.status(500).json({
@@ -117,14 +112,13 @@ exports.resendAccessCode = async (req, res) => {
     }
   }
 
-  // Tạo code mới nếu chưa có hoặc đã hết hạn
   code = Math.floor(100000 + Math.random() * 900000).toString();
   createdAt = Date.now();
 
   await db.collection("accessCodes").doc(phoneNumber).set({ code, createdAt });
 
   try {
-    // await sendSMS(phoneNumber, `Your new Skipli access code is: ${code}`);
+    await sendSMS(phoneNumber, `Your new Skipli access code is: ${code}`);
     res.json({ success: true, msg: "Generated and sent new access code!" });
   } catch (err) {
     res
@@ -133,14 +127,11 @@ exports.resendAccessCode = async (req, res) => {
   }
 };
 
-// Create a new employee
 exports.createEmployee = async (req, res) => {
   const { name, email, phoneNumber, role } = req.body;
   try {
-    // 1. Tạo setupToken
     const setupToken = crypto.randomBytes(32).toString("hex");
 
-    // 2. Kiểm tra email đã tồn tại chưa
     const emailSnapshot = await db
       .collection("employees")
       .where("email", "==", email)
@@ -152,7 +143,6 @@ exports.createEmployee = async (req, res) => {
       });
     }
 
-    // 2. Tạo employee mới với setupToken
     const newDoc = db.collection("employees").doc();
     await newDoc.set({
       name,
@@ -163,11 +153,9 @@ exports.createEmployee = async (req, res) => {
       createdAt: Date.now(),
     });
 
-    // 3. Tạo link FE cho employee setup tài khoản
     const feUrl = process.env.FE_URL || "http://localhost:5173";
     const setupLink = `${feUrl}/employee/setup?token=${setupToken}&id=${newDoc.id}`;
 
-    // 4. Gửi email cho employee (có kèm link)
     await sendMail(
       email,
       "Welcome to Skipli!",
@@ -184,7 +172,6 @@ exports.createEmployee = async (req, res) => {
   }
 };
 
-// Delete employee
 exports.deleteEmployee = async (req, res) => {
   const { employeeId } = req.params;
   try {
@@ -195,10 +182,8 @@ exports.deleteEmployee = async (req, res) => {
   }
 };
 
-// Get all employees with pagination
 exports.getAllEmployees = async (req, res) => {
   try {
-    // Lấy param phân trang
     const page = parseInt(req.query["pagination[page]"]) || 1;
     const pageSize = parseInt(req.query["pagination[pageSize]"]) || 10;
     const offset = (page - 1) * pageSize;
@@ -209,7 +194,6 @@ exports.getAllEmployees = async (req, res) => {
       .get();
     const allDocs = snapshot.docs;
 
-    // Cắt mảng theo page/pageSize
     const docs = allDocs.slice(offset, offset + pageSize);
 
     const employeesWithId = docs.map((doc) => {
@@ -237,7 +221,6 @@ exports.getAllEmployees = async (req, res) => {
   }
 };
 
-// Get employee information
 exports.getEmployee = async (req, res) => {
   const { employeeId } = req.body;
   const doc = await db.collection("employees").doc(employeeId).get();
@@ -246,11 +229,9 @@ exports.getEmployee = async (req, res) => {
   res.json(doc.data());
 };
 
-// POST /api/employee-login
 exports.employeeLogin = async (req, res) => {
   const { username, password } = req.body;
 
-  // Tìm document có username trùng khớp
   const snapshot = await db
     .collection("employees")
     .where("username", "==", username)
@@ -259,16 +240,13 @@ exports.employeeLogin = async (req, res) => {
   if (snapshot.empty)
     return res.status(400).json({ success: false, msg: "User not found" });
 
-  // Lấy document đầu tiên
   const doc = snapshot.docs[0];
   const employee = doc.data();
 
-  // Kiểm tra password
   const match = await bcrypt.compare(password, employee.passwordHash);
   if (!match)
     return res.status(400).json({ success: false, msg: "Invalid password" });
 
-  // Tạo JWT cho employee
   const token = jwt.sign(
     { employeeId: doc.id, role: employee.role },
     process.env.JWT_SECRET,
@@ -285,7 +263,6 @@ exports.employeeLogin = async (req, res) => {
     phoneNumber: employee.phoneNumber,
   });
 };
-// POST /api/employee-setup
 exports.setupEmployeeAccount = async (req, res) => {
   const { employeeId, username, password, token } = req.body;
 
@@ -305,17 +282,14 @@ exports.setupEmployeeAccount = async (req, res) => {
     const empDocRef = db.collection("employees").doc(employeeId);
     const empDoc = await empDocRef.get();
 
-    // Check tồn tại và đúng token
     if (!empDoc.exists || empDoc.data().setupToken !== token) {
       return res
         .status(400)
         .json({ success: false, msg: "Invalid or expired token" });
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Update Firestore: set username, passwordHash, xoá setupToken
     const resp = await empDocRef.update({
       username: username,
       passwordHash: passwordHash,
@@ -328,7 +302,6 @@ exports.setupEmployeeAccount = async (req, res) => {
   }
 };
 
-// Update employee
 exports.updateEmployee = async (req, res) => {
   const { employeeId } = req.params;
   const { name, email, phoneNumber, role } = req.body;

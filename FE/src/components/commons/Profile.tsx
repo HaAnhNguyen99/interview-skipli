@@ -74,11 +74,10 @@ const Profile = () => {
 
   return (
     <>
-      {/* Custom item thay vì DropdownMenuItem */}
       <div
         className="px-2 py-1.5 cursor-pointer flex items-center justify-between gap-2 hover:bg-neutral-100 rounded"
         onClick={(e) => {
-          e.stopPropagation(); // Không đóng menu
+          e.stopPropagation();
           setOpen(true);
         }}>
         Profile <User className="w-4 h-4 text-neutral-500" />

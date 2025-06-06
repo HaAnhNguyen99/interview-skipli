@@ -6,10 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import Backbtn from "./Backbtn";
 import { useUser } from "@/context/UserContext";
-import type { AxiosError } from "axios";
 import axios from "axios";
 
-// Zod schema cho OTP
 const otpSchema = z.object({
   otp: z
     .string()
@@ -31,8 +29,7 @@ const VerifyPhone = ({
   const btnTitle = "Submit";
   const label = "Code not receive?";
   const actionLabel = "Send again";
-
-  const [msg, setMsg] = useState<string>("");
+  const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
@@ -46,23 +43,24 @@ const VerifyPhone = ({
 
   const onSubmitOtp = async (data: OtpForm) => {
     setLoading(true);
-    setMsg("");
     try {
       const res = await verifyAccessCode(phone, data.otp);
-      if (res.data.success) {
-        login({
-          token: res.data.token,
-          phoneNumber: res.data.phoneNumber,
-          role: res.data.role,
-        });
-        setMsg("Đăng nhập thành công!");
+      const { success, token, phoneNumber, role } = res.data;
+      if (success) {
+        login(
+          {
+            phoneNumber,
+            role,
+          },
+          token
+        );
         navigate("/admin/dashboard");
       } else {
-        setMsg("Sai mã truy cập!");
+        setError("Wrong code or expired code");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {
-        setMsg(
+        setError(
           err.response?.data?.msg || "Something went wrong, please try again!"
         );
       }
@@ -90,13 +88,6 @@ const VerifyPhone = ({
           {otpErrors.otp && (
             <div style={{ color: "red" }}>{otpErrors.otp.message}</div>
           )}
-
-          <div
-            className={`mt-5 ${
-              msg.includes("thành công") ? "text-green-400" : "text-red-400"
-            }`}>
-            {msg}
-          </div>
 
           <button
             className="bg-blue-500 hover:bg-blue-700 text-white py-2 px-4 rounded-md w-full"

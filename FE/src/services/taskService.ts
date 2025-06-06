@@ -7,7 +7,6 @@ const taskAPI = axios.create({
   baseURL: baseURL,
 });
 
-// Helper function to get config with Authorization header
 const getAuthConfig = (token: string) => ({
   headers: {
     Authorization: `Bearer ${token}`,

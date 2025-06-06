@@ -57,7 +57,6 @@ router.post(
 router.get(
   "/get-all-employees",
   authMiddleware,
-  managerOnly,
   controller.getAllEmployees
 );
 

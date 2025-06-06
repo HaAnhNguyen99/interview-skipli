@@ -1,4 +1,3 @@
-// src/services/apiClient.ts
 import type { EmployeeBase } from "@/types/employee";
 import axios from "axios";
 

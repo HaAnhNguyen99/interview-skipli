@@ -27,13 +27,6 @@ const User = () => {
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuGroup>
             <Profile />
-            <div
-              className="px-2 py-1.5 cursor-pointer flex items-center justify-between gap-2 hover:bg-neutral-100 rounded"
-              onClick={(e) => {
-                e.stopPropagation(); // Không đóng menu
-              }}>
-              Change Password <Lock className="w-[14px] h-3 text-neutral-500" />
-            </div>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
 

@@ -13,7 +13,6 @@ exports.getTask = async (req, res) => {
   }
 };
 
-// GET /api/tasks?assignedTo=employeeId&status=pending
 exports.getTasks = async (req, res) => {
   const { assignedTo, status } = req.query;
   try {
@@ -23,7 +22,6 @@ exports.getTasks = async (req, res) => {
     query = query.orderBy("createdAt", "desc");
     const snapshot = await query.get();
 
-    // Sử dụng Promise.all để xử lý bất đồng bộ trong map
     const tasks = await Promise.all(
       snapshot.docs.map(async (doc) => {
         const data = doc.data();
@@ -47,7 +45,6 @@ exports.getTasks = async (req, res) => {
           }
         }
 
-        // Đề xuất: Ghi đè trường assignedTo thành object luôn (nếu muốn)
         return {
           id: doc.id,
           ...data,

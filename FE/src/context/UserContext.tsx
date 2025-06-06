@@ -34,7 +34,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     return token || "";
   });
 
-  // Khi login, lưu vào context + localStorage
   const login = (user: User, token: string) => {
     setUser(user);
     setToken(token);
@@ -42,7 +41,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
 
-  // Khi logout, xoá context + localStorage
   const logout = () => {
     setUser(null);
     setToken("null");
@@ -50,7 +48,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.removeItem("user");
   };
 
-  // Update user
   const updateUser = (fields: UpdateUserFields) => {
     setUser((prevUser) => {
       if (!prevUser) return prevUser;
@@ -67,7 +64,6 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-// Hook để dùng context
 export const useUser = () => {
   const ctx = useContext(UserContext);
   if (!ctx) throw new Error("useUser must be used within UserProvider");

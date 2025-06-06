@@ -35,7 +35,6 @@ const OTPVerify = ({
       next[i] = val[0];
       return next;
     });
-    // Move focus to next input
     if (i < OTP_LENGTH - 1 && val) {
       inputs.current[i + 1]?.focus();
     }

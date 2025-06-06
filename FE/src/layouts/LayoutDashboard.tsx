@@ -11,7 +11,7 @@ interface LayoutDashboardProps {
 }
 const LayoutDashboard = ({ children }: LayoutDashboardProps) => {
   const { user } = useUser();
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.role === "manager";
 
   const adminItems = [
     {

@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-// Middleware xác thực JWT, lấy role/phoneNumber từ token
 function authMiddleware(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader)
