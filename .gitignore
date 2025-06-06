@@ -2,7 +2,6 @@ node_modules/
 build/
 dist/
 
-
 firebaseAdminKey.json
 .DS_Store
 
