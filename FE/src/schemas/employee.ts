@@ -10,3 +10,11 @@ export const employeeSchema = z.object({
 });
 
 export type EmployeeFormData = z.infer<typeof employeeSchema>;
+
+export const employeeProfileSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  phoneNumber: z.string().length(10, "Invalid phone number"),
+  name: z.string().min(1, "Name is required"),
+});
+
+export type EmployeeProfileFormData = z.infer<typeof employeeProfileSchema>;

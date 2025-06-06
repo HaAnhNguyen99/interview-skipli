@@ -3,8 +3,8 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
+} from "@/components/commons/ui/popover";
+import { Button } from "@/components/commons/ui/button";
 import { deleteEmployee } from "@/services/employeeApi";
 import { useUser } from "@/context/UserContext";
 import { TrashIcon } from "lucide-react";

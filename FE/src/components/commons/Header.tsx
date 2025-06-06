@@ -1,5 +1,5 @@
 import { Bell } from "lucide-react";
-import User from "@/components/User";
+import User from "@/components/commons/User";
 const Header = () => {
   return (
     <header className="flex items-center justify-end gap-5 w-full h-16 bg-white border-b border-gray-200 px-10">

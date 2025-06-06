@@ -280,6 +280,9 @@ exports.employeeLogin = async (req, res) => {
     token,
     employeeId: doc.id,
     role: employee.role,
+    name: employee.name,
+    email: employee.email,
+    phoneNumber: employee.phoneNumber,
   });
 };
 // POST /api/employee-setup
@@ -335,5 +338,5 @@ exports.updateEmployee = async (req, res) => {
     phoneNumber,
     role,
   });
-  res.json({ success: true });
+  res.json({ success: true, employee: { name, email, phoneNumber, role } });
 };

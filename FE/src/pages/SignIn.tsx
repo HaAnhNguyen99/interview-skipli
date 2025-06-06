@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import LoginPhone from "../components/LoginPhone";
-import OTPVerify from "@/components/OTPVerify";
+import LoginPhone from "../components/commons/LoginPhone";
+import OTPVerify from "@/components/commons/OTPVerify";
 
 const SignIn = () => {
   const [step, setStep] = useState<number>(1);

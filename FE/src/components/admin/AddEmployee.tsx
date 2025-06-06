@@ -5,11 +5,11 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "./ui/button";
-import { EditIcon } from "lucide-react";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
+} from "@/components/commons/ui/dialog";
+import { Button } from "../commons/ui/button";
+import { PlusIcon } from "lucide-react";
+import { Label } from "../commons/ui/label";
+import { Input } from "../commons/ui/input";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -19,45 +19,39 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
+} from "@/components/commons/ui/select";
 import { useState } from "react";
+import { createEmployee } from "@/services/employeeApi";
 import { useUser } from "@/context/UserContext";
 import axios from "axios";
-import type { Employee } from "@/types/employee";
-import { updateEmployee } from "@/services/employeeApi";
-import { employeeSchema, type EmployeeFormData } from "@/schemas/employee";
+import { employeeSchema } from "@/schemas/employee";
+import type { EmployeeFormData } from "@/schemas/employee";
 
-interface EditEmployeeProps {
-  employee: Employee;
-  onUpdated: () => void;
-}
-const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
-  const [isLoading, setIsLoading] = useState(false);
+const AddEmployee = ({ onAdd }: { onAdd: () => void }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const { user } = useUser();
-
   const form = useForm<EmployeeFormData>({
     resolver: zodResolver(employeeSchema),
-    defaultValues: {
-      name: employee.name,
-      email: employee.email,
-      phoneNumber: employee.phoneNumber,
-      role: employee.role as EmployeeFormData["role"],
-    },
   });
-
+  const { token } = useUser();
   const onSubmit = async (data: EmployeeFormData) => {
     setIsLoading(true);
     try {
-      await updateEmployee(user?.token || "", employee.id, { ...data });
-      setError("");
-      onUpdated();
+      form.reset();
+      await createEmployee(token, {
+        ...data,
+      });
+      onAdd();
       setIsOpen(false);
     } catch (err) {
       if (axios.isAxiosError(err)) {
         if (err.status === 401) {
           alert("Your session has expired. Please log in again.");
+        }
+
+        if (err.status === 400) {
+          setError(err.response?.data?.msg + ". Please try again");
         } else {
           alert("An error occurred. Please try again later.");
         }
@@ -70,13 +64,15 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 h-9 px-4 py-2 has-[>svg]:px-3">
-        <EditIcon />
-        Edit
+        <PlusIcon />
+        Add Employee
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Employee</DialogTitle>
-          <DialogDescription>Update employee information.</DialogDescription>
+          <DialogTitle>Add Employee</DialogTitle>
+          <DialogDescription>
+            Add a new employee to the system.
+          </DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(onSubmit)}>
           <div className="grid gap-4 py-4">
@@ -112,7 +108,7 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
             </div>
             {/* Phone Number and Role */}
             {form.formState.errors.phoneNumber && (
-              <p className="text-red-500">
+              <p className="text-red-500 text-left">
                 {form.formState.errors.phoneNumber.message}
               </p>
             )}
@@ -123,6 +119,7 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
                 <Input
                   type="text"
                   id="phoneNumber"
+                  placeholder="Phone Number"
                   {...form.register("phoneNumber")}
                 />
               </div>
@@ -133,13 +130,12 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
                   onValueChange={(value) =>
                     form.setValue(
                       "role",
-                      value as z.infer<typeof zodSchema>["role"],
+                      value as z.infer<typeof employeeSchema>["role"],
                       {
                         shouldValidate: true,
                       }
                     )
-                  }
-                  defaultValue={employee.role}>
+                  }>
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select a role" />
                   </SelectTrigger>
@@ -154,9 +150,17 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
               </div>
             </div>
           </div>
-          {error && <p className="text-red-500">{error}</p>}
-          <Button type="submit" className="w-full mt-3" disabled={isLoading}>
-            {isLoading ? "Updating..." : "Update Employee"}
+          {form.formState.errors.role && (
+            <p className="text-red-500 text-right">
+              {form.formState.errors.role.message}
+            </p>
+          )}
+          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+          <Button
+            type="submit"
+            className="w-full mt-3 active:scale-[0.99] active:duration-75"
+            disabled={isLoading}>
+            {isLoading ? "Sending Invitation..." : "Send Invitation"}
           </Button>
         </form>
       </DialogContent>
@@ -164,4 +168,4 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
   );
 };
 
-export default EditEmployee;
+export default AddEmployee;

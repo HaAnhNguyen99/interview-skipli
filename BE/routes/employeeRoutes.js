@@ -112,7 +112,6 @@ router.delete(
 router.put(
   "/employee-update/:employeeId",
   authMiddleware,
-  managerOnly,
   controller.updateEmployee
 );
 
@@ -123,4 +122,7 @@ router.put(
  * @return  { success: true, msg: "Resent existing access code!" }
  */
 router.post("/resend-access-code", controller.resendAccessCode);
+
+
+
 module.exports = router;

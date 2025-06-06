@@ -7,26 +7,11 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
+} from "@/components/commons/ui/sidebar";
 import { useLocation, useNavigate } from "react-router-dom";
 import logo from "@/assets/logo.webp";
 
-const items = [
-  {
-    title: "Manage Employee",
-    url: "/admin/dashboard",
-  },
-  {
-    title: "Manage Task",
-    url: "/admin/tasks",
-  },
-  {
-    title: "Message",
-    url: "/messages",
-  },
-];
-
-const AppSidebar = () => {
+const AppSidebar = ({ items }: { items: { title: string; url: string }[] }) => {
   const location = useLocation();
   const navigate = useNavigate();
 

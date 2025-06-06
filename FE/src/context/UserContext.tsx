@@ -3,48 +3,65 @@ import React, { createContext, useContext, useState } from "react";
 type User = {
   phoneNumber: string;
   role: string;
-  token: string;
   email?: string;
+  employeeId?: string;
+  name?: string;
 };
 
 type UserContextType = {
   user: User | null;
-  login: (user: User) => void;
+  token: string;
+  login: (user: User, token: string) => void;
   logout: () => void;
+  updateUser: (user: User) => void;
 };
+
+type UpdateUserFields = Pick<User, "name" | "email" | "phoneNumber">;
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(() => {
     const token = localStorage.getItem("token");
-    const phoneNumber = localStorage.getItem("phoneNumber");
-    const role = localStorage.getItem("role");
-    if (token && phoneNumber && role) {
-      return { token, phoneNumber, role };
+    const user = localStorage.getItem("user");
+    if (token && user) {
+      return { token, ...JSON.parse(user) };
     }
     return null;
   });
+  const [token, setToken] = useState<string>(() => {
+    const token = localStorage.getItem("token");
+    return token || "";
+  });
 
   // Khi login, lưu vào context + localStorage
-  const login = (user: User) => {
+  const login = (user: User, token: string) => {
     setUser(user);
-    localStorage.setItem("token", user.token);
-    localStorage.setItem("phoneNumber", user.phoneNumber);
-    localStorage.setItem("role", user.role);
-    localStorage.setItem("email", user.email || "");
+    setToken(token);
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
   };
 
   // Khi logout, xoá context + localStorage
   const logout = () => {
     setUser(null);
+    setToken("null");
     localStorage.removeItem("token");
-    localStorage.removeItem("phoneNumber");
-    localStorage.removeItem("role");
+    localStorage.removeItem("user");
+  };
+
+  // Update user
+  const updateUser = (fields: UpdateUserFields) => {
+    setUser((prevUser) => {
+      if (!prevUser) return prevUser;
+      const updatedUser = { ...prevUser, ...fields };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
   };
 
   return (
-    <UserContext.Provider value={{ user, login, logout }}>
+    <UserContext.Provider value={{ user, token, login, logout, updateUser }}>
       {children}
     </UserContext.Provider>
   );

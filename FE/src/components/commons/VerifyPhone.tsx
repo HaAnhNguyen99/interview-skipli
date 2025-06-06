@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { verifyAccessCode } from "../services/authService";
+import { verifyAccessCode } from "../../services/authService";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import Backbtn from "./commons/Backbtn";
+import Backbtn from "./Backbtn";
 import { useUser } from "@/context/UserContext";
 import type { AxiosError } from "axios";
 import axios from "axios";

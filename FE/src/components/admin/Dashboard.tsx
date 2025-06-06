@@ -1,7 +1,7 @@
-import { EditIcon, FilterIcon, TrashIcon } from "lucide-react";
-import { Button } from "./ui/button";
-import { Separator } from "./ui/separator";
-import { deleteEmployee, getAllEmployees } from "@/services/employeeApi";
+import { FilterIcon } from "lucide-react";
+import { Button } from "../commons/ui/button";
+import { Separator } from "../commons/ui/separator";
+import { getAllEmployees } from "@/services/employeeApi";
 import { useState, useEffect, useCallback } from "react";
 import {
   Table,
@@ -10,23 +10,23 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "./ui/table";
+} from "../commons/ui/table";
 import { useUser } from "@/context/UserContext";
 import AddEmployee from "./AddEmployee";
 import EditEmployee from "./EditEmployee";
 import type { EmployeeResponse } from "@/types/employee";
-import { Badge } from "./ui/badge";
+import { Badge } from "../commons/ui/badge";
 import DeleteEmployee from "./DeleteEmployee";
 
 const Dashboard = () => {
   const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
 
-  const { user } = useUser();
+  const { token } = useUser();
 
   const fetchEmployees = useCallback(async () => {
-    const response = await getAllEmployees(user?.token || "");
+    const response = await getAllEmployees(token);
     setEmployees(response.data.employees);
-  }, [user]);
+  }, [token]);
 
   useEffect(() => {
     fetchEmployees();

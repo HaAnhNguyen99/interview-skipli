@@ -11,6 +11,12 @@ const employeeAPI = axios.create({
   },
 });
 
+const getAuthConfig = (token: string) => ({
+  headers: {
+    Authorization: `Bearer ${token}`,
+  },
+});
+
 export const setupEmployee = (
   token: string,
   employeeId: string,
@@ -32,19 +38,11 @@ export const loginEmployee = (username: string, password: string) =>
 
 // Get all employees
 export const getAllEmployees = (token: string) =>
-  employeeAPI.get("/get-all-employees", {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  employeeAPI.get("/get-all-employees", getAuthConfig(token));
 
 // Create employee
 export const createEmployee = (token: string, employee: EmployeeBase) =>
-  employeeAPI.post("/create-employee", employee, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  employeeAPI.post("/create-employee", employee, getAuthConfig(token));
 
 // Update employee
 export const updateEmployee = (
@@ -52,17 +50,26 @@ export const updateEmployee = (
   employeeId: string,
   employee: EmployeeBase
 ) =>
-  employeeAPI.put(`/employee-update/${employeeId}`, employee, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  employeeAPI.put(
+    `/employee-update/${employeeId}`,
+    employee,
+    getAuthConfig(token)
+  );
 
 // Delete employee
 export const deleteEmployee = (token: string, employeeId: string) =>
-  employeeAPI.delete(`/employee-delete/${employeeId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  employeeAPI.delete(`/employee-delete/${employeeId}`, getAuthConfig(token));
+
+// Update employee profile
+export const updateEmployeeProfile = (
+  token: string,
+  employeeId: string,
+  employee: EmployeeBase
+) =>
+  employeeAPI.put(
+    `/employee-update/${employeeId}`,
+    employee,
+    getAuthConfig(token)
+  );
+
 export default employeeAPI;

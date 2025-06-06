@@ -2,7 +2,7 @@ import { useUser } from "@/context/UserContext";
 import { resendAccessCode, verifyAccessCode } from "@/services/authService";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Backbtn from "./commons/Backbtn";
+import Backbtn from "./Backbtn";
 import axios from "axios";
 const OTP_LENGTH = 6;
 const OTPVerify = ({
@@ -79,15 +79,17 @@ const OTPVerify = ({
         localStorage.removeItem("send_OTP");
         localStorage.removeItem("phone");
 
-        login({
-          token: res.data.token,
-          phoneNumber: res.data.phoneNumber,
-          role: res.data.role,
-        });
-        setError("Đăng nhập thành công!");
+        login(
+          {
+            phoneNumber: res.data.phoneNumber,
+            role: res.data.role,
+          },
+          res.data.token
+        );
+        setError("Login successfully!");
         navigate("/admin/dashboard");
       } else {
-        setError("Sai mã truy cập!");
+        setError("Wrong code or expired code");
       }
     } catch (err) {
       if (axios.isAxiosError(err)) {

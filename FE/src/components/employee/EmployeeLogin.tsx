@@ -1,13 +1,13 @@
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/commons/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+} from "@/components/commons/ui/card";
+import { Input } from "@/components/commons/ui/input";
+import { Label } from "@/components/commons/ui/label";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { loginEmployee } from "@/services/employeeApi";
 import axios from "axios";
+import { useUser } from "@/context/UserContext";
 
 // 1. Định nghĩa Zod schema validate
 const schema = z.object({
@@ -33,6 +34,7 @@ const EmployeeLogin = () => {
     formState: { errors, isSubmitting },
   } = useForm<FormValues>({ resolver: zodResolver(schema) });
   const navigate = useNavigate();
+  const { login } = useUser();
 
   // Submit form
   const onSubmit = async (data: FormValues) => {
@@ -42,6 +44,15 @@ const EmployeeLogin = () => {
       // Gọi API backend
       const res = await loginEmployee(data.username, data.password);
 
+      const { employeeId, success, token, phoneNumber, role, email, name } =
+        res.data;
+
+      if (success) {
+        login({ employeeId, phoneNumber, role, email, name }, token);
+        navigate("/employee/dashboard");
+      } else {
+        setLoginErr(res.data.msg || "Invalid username or password");
+      }
       if (res.data.success) {
         navigate("/employee/dashboard");
       } else {
@@ -59,7 +70,7 @@ const EmployeeLogin = () => {
   useEffect(() => {
     setTimeout(() => {
       setIsLoading(false);
-    }, 5000);
+    }, 2000);
   }, []);
 
   if (isLoading) {
