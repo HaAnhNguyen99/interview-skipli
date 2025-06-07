@@ -72,3 +72,6 @@ Backend
 - Send and receive messages between accounts real time. (Manager and Employees)
 
 
+#### Link env files 
+Copy and paste it to /BE and /FE folder for testing
+- [Link Drive](https://drive.google.com/drive/folders/1x_Tfhc_DVJ6YN9K3r0zW9W-b5u6m20ka?usp=sharing).
