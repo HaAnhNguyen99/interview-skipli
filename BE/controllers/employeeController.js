@@ -38,7 +38,7 @@ exports.createNewAccessCode = async (req, res) => {
     .doc(phoneNumber)
     .set({ code, createdAt: Date.now() });
   try {
-    // await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
+    await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
     res.json({ success: true });
   } catch (err) {
     res
