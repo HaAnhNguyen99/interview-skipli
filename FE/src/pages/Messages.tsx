@@ -85,6 +85,13 @@ const Messages = () => {
   }, [messages]);
 
   console.log(messages);
+
+  if (!selectedEmployee)
+    return (
+      <div className="flex flex-col gap-2">
+        <h1>Select an employee to start chatting</h1>
+      </div>
+    );
   return (
     <div className="flex flex-col gap-2" ref={scrollRef}>
       <div className="mt-4">
@@ -96,8 +103,15 @@ const Messages = () => {
         ))}
       </div>
       <form onSubmit={handleSendMessage} className="flex gap-2">
-        <Input type="text" ref={inputRef} />
-        <Button type="submit">Send</Button>
+        <Input
+          type="text"
+          ref={inputRef}
+          placeholder="Type your message"
+          disabled={!selectedEmployee}
+        />
+        <Button type="submit" disabled={!selectedEmployee}>
+          Send
+        </Button>
       </form>
     </div>
   );

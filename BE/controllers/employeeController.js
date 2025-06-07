@@ -9,7 +9,7 @@ const { sendMail } = require("../services/mailService");
 exports.createNewAccessCode = async (req, res) => {
   const { phoneNumber } = req.body;
   const code = Math.floor(100000 + Math.random() * 900000).toString();
-
+  console.log("access code: ", code);
   const docRef = admin.firestore().collection("managers").doc(phoneNumber);
   const doc = await docRef.get();
   if (!doc.exists) {
@@ -39,7 +39,7 @@ exports.createNewAccessCode = async (req, res) => {
     .set({ code, createdAt: Date.now() });
 
   try {
-    await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
+    // await sendSMS(phoneNumber, `Your Skipli access code is: ${code}`);
     res.json({ success: true });
   } catch (err) {
     res

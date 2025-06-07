@@ -12,11 +12,11 @@ const ChatSidebar = ({
       {employees?.map((employee) => (
         <div
           key={employee.id}
-          className={`${
-            selectedEmployee?.id === employee.id ? "bg-blue-500" : ""
+          className={`px-2 py-3 border cursor-pointer flex items-center justify-between gap-2 hover:bg-amber-200 ${
+            selectedEmployee?.id === employee.id ? "bg-amber-100" : ""
           }`}
           onClick={() => setSelectedEmployee(employee)}>
-          {employee.name}
+          {employee.name} - {employee.email}
         </div>
       ))}
     </aside>

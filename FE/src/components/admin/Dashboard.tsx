@@ -42,10 +42,10 @@ const Dashboard = () => {
         </h2>
         <div className="flex gap-2">
           <AddEmployee onAdd={() => fetchEmployees()} />
-          <Button variant="outline">
+          {/* <Button variant="outline">
             <FilterIcon />
             Filter
-          </Button>
+          </Button> */}
         </div>
       </div>
 
