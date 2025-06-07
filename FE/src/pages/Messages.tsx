@@ -12,20 +12,19 @@ type Message = {
   to: string;
   content: string;
 };
-const API_URL = "http://localhost:4000";
-const socket = io(API_URL);
+const SOCKETID = "http://localhost:4000";
+const MANAGER_PHONE = import.meta.env.VITE_MANAGER_PHONE;
 
 const Messages = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const { selectedEmployee } = useChat();
   const inputRef = useRef<HTMLInputElement>(null);
-  const socketRef = useRef<Socket | null>(null);
+  const socket = useRef<Socket | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { user } = useUser();
-
   const fromID =
     user?.role === "manager" ? user?.phoneNumber : user?.employeeId;
-  const toID = user?.role === "manager" ? selectedEmployee?.id : "84968127409";
+  const toID = user?.role === "manager" ? selectedEmployee?.id : MANAGER_PHONE;
 
   const handleSendMessage = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -33,8 +32,7 @@ const Messages = () => {
     if (!input || !fromID || !toID) return;
 
     try {
-      await sendMessage({ from: fromID, to: toID, content: input });
-      socketRef.current?.emit("send_message", {
+      socket.current?.emit("send_message", {
         from: fromID,
         to: toID,
         content: inputRef.current?.value,
@@ -61,24 +59,28 @@ const Messages = () => {
   }, [fromID, toID]);
 
   useEffect(() => {
-    if (!socket) return;
-
-    fetchMessages();
+    socket.current = io(SOCKETID);
 
     const handleReceiveMessage = (data: Message) => {
       setMessages((prev) => [...prev, data]);
     };
 
-    socket.on("connect", () => {
-      if (fromID) socket.emit("join", fromID);
+    socket.current?.on("connect", () => {
+      if (fromID) socket.current?.emit("join", fromID);
     });
 
-    socket.on("receive_message", handleReceiveMessage);
+    socket.current?.on("receive_message", handleReceiveMessage);
+
+    fetchMessages();
 
     return () => {
-      socket.off("receive_message");
+      if (socket.current) {
+        console.log("Disconnecting socket");
+        socket.current?.off("receive_message");
+        socket.current?.disconnect();
+      }
     };
-  }, [fetchMessages]);
+  }, [fetchMessages, fromID]);
 
   useEffect(() => {
     window.scrollTo(0, document.body.scrollHeight);
@@ -86,32 +88,20 @@ const Messages = () => {
 
   console.log(messages);
 
-  if (!selectedEmployee)
-    return (
-      <div className="flex flex-col gap-2">
-        <h1>Select an employee to start chatting</h1>
-      </div>
-    );
+  if (!selectedEmployee && user?.role === "manager") return <></>;
   return (
     <div className="flex flex-col gap-2" ref={scrollRef}>
       <div className="mt-4">
         {messages.map((msg, id) => (
           <div key={id}>
-            <strong>{msg.from === fromID ? "You" : "Them"}:</strong>{" "}
+            <strong>{msg.from === fromID ? "You" : "Manager"}:</strong>{" "}
             {msg.content}
           </div>
         ))}
       </div>
       <form onSubmit={handleSendMessage} className="flex gap-2">
-        <Input
-          type="text"
-          ref={inputRef}
-          placeholder="Type your message"
-          disabled={!selectedEmployee}
-        />
-        <Button type="submit" disabled={!selectedEmployee}>
-          Send
-        </Button>
+        <Input type="text" ref={inputRef} placeholder="Type your message" />
+        <Button type="submit">Send</Button>
       </form>
     </div>
   );

@@ -8,7 +8,7 @@ const ChatSidebar = ({
 }) => {
   const { selectedEmployee, setSelectedEmployee } = useChat();
   return (
-    <aside className="w-1/5 h-full border-r border-gray-200">
+    <aside className="w-1/5 h-full border-r border-gray-200 overflow-hidden">
       {employees?.map((employee) => (
         <div
           key={employee.id}

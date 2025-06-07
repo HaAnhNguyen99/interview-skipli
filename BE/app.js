@@ -31,10 +31,11 @@ const io = socketio(server, {
 const onlineUsers = {};
 
 io.on("connection", (socket) => {
-  console.log("User connected:", socket.id);
-
   socket.on("join", (userId) => {
-    onlineUsers[userId] = socket.id;
+    if (!onlineUsers[userId]) onlineUsers[userId] = [];
+
+    onlineUsers[userId].push(socket.id);
+
     console.log("Joined:", onlineUsers);
   });
 
