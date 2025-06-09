@@ -1,6 +1,4 @@
-import { FilterIcon } from "lucide-react";
-import { Button } from "../commons/ui/button";
-import { Separator } from "../commons/ui/separator";
+import { Separator } from "../components/commons/ui/separator";
 import { getAllEmployees } from "@/services/employeeApi";
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -10,13 +8,13 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "../commons/ui/table";
+} from "../components/commons/ui/table";
 import { useUser } from "@/context/UserContext";
-import AddEmployee from "./AddEmployee";
-import EditEmployee from "./EditEmployee";
+import AddEmployee from "../components/admin/AddEmployee";
+import EditEmployee from "../components/admin/EditEmployee";
 import type { EmployeeResponse } from "@/types/employee";
-import { Badge } from "../commons/ui/badge";
-import DeleteEmployee from "./DeleteEmployee";
+import { Badge } from "../components/commons/ui/badge";
+import DeleteEmployee from "../components/admin/DeleteEmployee";
 
 const Dashboard = () => {
   const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
@@ -42,10 +40,6 @@ const Dashboard = () => {
         </h2>
         <div className="flex gap-2">
           <AddEmployee onAdd={() => fetchEmployees()} />
-          {/* <Button variant="outline">
-            <FilterIcon />
-            Filter
-          </Button> */}
         </div>
       </div>
 

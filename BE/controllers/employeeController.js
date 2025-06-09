@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const { sendSMS } = require("../services/smsService");
 const db = require("../services/firebaseService");
 const { sendMail } = require("../services/mailService");
+const { uploadImage } = require("../services/imageService");
 
 exports.createNewAccessCode = async (req, res) => {
   const { phoneNumber } = req.body;
@@ -150,6 +151,7 @@ exports.createEmployee = async (req, res) => {
       role,
       setupToken,
       createdAt: Date.now(),
+      status: "inactive",
     });
 
     const feUrl = process.env.FE_URL || "http://localhost:5173";
@@ -231,10 +233,8 @@ exports.getEmployee = async (req, res) => {
 exports.employeeLogin = async (req, res) => {
   const { username, password } = req.body;
 
-  const snapshot = await db
-    .collection("employees")
-    .where("username", "==", username)
-    .get();
+  const snapshot = await db.collection("employees").get();
+  console.log(snapshot.docs);
 
   if (snapshot.empty)
     return res.status(400).json({ success: false, msg: "User not found" });
@@ -289,7 +289,7 @@ exports.setupEmployeeAccount = async (req, res) => {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
-    const resp = await empDocRef.update({
+    await empDocRef.update({
       username: username,
       passwordHash: passwordHash,
       setupToken: admin.firestore.FieldValue.delete(),
@@ -311,4 +311,19 @@ exports.updateEmployee = async (req, res) => {
     role,
   });
   res.json({ success: true, employee: { name, email, phoneNumber, role } });
+};
+
+exports.uploadImage = async (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ success: false, msg: "No file uploaded" });
+  }
+
+  const file = req.file;
+  
+  try {
+    const url = await uploadImage(file);
+    res.json({ success: true, url });
+  } catch (err) {
+    res.status(500).json({ success: false, msg: err.message });
+  }
 };

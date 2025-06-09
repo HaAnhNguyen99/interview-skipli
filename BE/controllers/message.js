@@ -34,3 +34,31 @@ exports.getMessages = async (req, res) => {
     res.status(500).json({ success: false, msg: err.message });
   }
 };
+
+exports.getAllEmployeesWithMessages = async (req, res) => {
+  try {
+    const snapshot = await db
+      .collection("employees")
+      .where("status", "==", "active")
+      .get();
+    const docs = snapshot.docs;
+
+    console.log(docs);
+
+    const employeesWithId = docs.map((doc) => {
+      const employee = doc.data();
+      const { passwordHash, username, ...employeeWithoutSensitive } = employee;
+      return {
+        id: doc.id,
+        ...employeeWithoutSensitive,
+      };
+    });
+
+    res.json({
+      success: true,
+      employees: employeesWithId,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, msg: err.message });
+  }
+};

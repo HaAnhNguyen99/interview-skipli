@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import AddTask from "./AddTask";
-import { TaskPriority, TaskStatus, type AllTaskResponse } from "@/types/task";
+import AddTask from "../components/admin/AddTask";
+import { TaskStatus, type AllTaskResponse } from "@/types/task";
 import {
   Table,
   TableHeader,
@@ -8,13 +8,14 @@ import {
   TableHead,
   TableBody,
   TableCell,
-} from "../commons/ui/table";
+} from "../components/commons/ui/table";
 import { getTasks } from "@/services/taskService";
 import { useUser } from "@/context/UserContext";
-import { Badge } from "../commons/ui/badge";
-import EditTask from "./EditTask";
-import DeleteTask from "./DeleteTask";
-import TaskStatusBadge from "../commons/TaskStatusBadge";
+import { Badge } from "../components/commons/ui/badge";
+import EditTask from "../components/admin/EditTask";
+import DeleteTask from "../components/admin/DeleteTask";
+import TaskStatusBadge from "../components/commons/TaskStatusBadge";
+import Loading from "@/components/commons/loading/loading";
 
 const ManageTask = () => {
   const [tasks, setTasks] = useState<AllTaskResponse[]>([]);
@@ -23,14 +24,27 @@ const ManageTask = () => {
   const { token } = useUser();
 
   const fetchTasks = useCallback(async () => {
-    const response = await getTasks(token);
-    console.log(response.data.tasks);
-    setTasks(response.data.tasks);
+    try {
+      setIsLoading(true);
+      const response = await getTasks(token);
+      setTasks(response.data.tasks);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [token]);
 
   useEffect(() => {
     fetchTasks();
-  }, [fetchTasks, isLoading]);
+  }, [fetchTasks]);
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center items-center h-full">
+        <Loading />
+      </div>
+    );
 
   return (
     <div className="mt-10 px-10">

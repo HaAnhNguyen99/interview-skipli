@@ -7,13 +7,14 @@ import EmployeeLogin from "./components/employee/EmployeeLogin";
 import EmployeeDashboard from "./components/employee/EmployeeDashboard";
 import LayoutDashboard from "./layouts/LayoutDashboard";
 import LandingPage from "./pages/LandingPage";
-import Dashboard from "./components/admin/Dashboard";
+import Dashboard from "./pages/Dashboard";
 import { ManagerRoute } from "./routes/ManagerRoute";
-import ManageTask from "./components/admin/ManageTask";
+import ManageTask from "./pages/ManageTask";
 import { TaskProvider } from "./context/TaskContext";
 import Messages from "./pages/Messages";
 import LayoutChat from "./layouts/LayoutChat";
 import { ChatProvider } from "./context/ChatConText";
+import UploadImage from "./components/commons/UploadImage";
 const ROUTES = {
   HOME: "/",
   ADMIN: {
@@ -26,6 +27,7 @@ const ROUTES = {
     SETUP: "/employee/setup",
     LOGIN: "/employee/login",
     DASHBOARD: "/employee/dashboard",
+    UPLOAD_IMAGE: "/employee/upload-image",
   },
 };
 
@@ -93,6 +95,14 @@ const routeConfig = [
             </LayoutChat>
           </ChatProvider>
         </LayoutDashboard>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: ROUTES.EMPLOYEE.UPLOAD_IMAGE,
+    element: (
+      <ProtectedRoute>
+        <UploadImage />
       </ProtectedRoute>
     ),
   },

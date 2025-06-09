@@ -1,3 +1,4 @@
+import type { Message } from "@/types/message";
 import axios from "axios";
 
 const baseURL = import.meta.env.VITE_BASEURL;
@@ -15,33 +16,16 @@ const getAuthConfig = (token: string) => ({
   },
 });
 
-export const sendMessage = async ({
-  from,
-  to,
-  content,
-}: {
-  from: string;
-  to: string;
-  content: string;
-}) => {
-  return messageAPI.post(`/messages`, {
-    from,
-    to,
-    content,
-  });
+export const sendMessage = async (token: string, message: Message) => {
+  return messageAPI.post(`/messages`, message, getAuthConfig(token));
 };
 
-export const getMessages = async ({
-  from,
-  to,
-}: {
-  from: string;
-  to: string;
-}) => {
+export const getMessages = async (token: string, { from, to }: Message) => {
   return messageAPI.get(`/messages`, {
     params: {
       from,
       to,
     },
+    ...getAuthConfig(token),
   });
 };

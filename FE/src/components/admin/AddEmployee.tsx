@@ -58,6 +58,7 @@ const AddEmployee = ({ onAdd }: { onAdd: () => void }) => {
       }
     } finally {
       setIsLoading(false);
+      setError("");
     }
   };
 

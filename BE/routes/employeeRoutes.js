@@ -1,8 +1,16 @@
 const express = require("express");
+const multer = require("multer");
 const router = express.Router();
 const controller = require("../controllers/employeeController");
 const { authMiddleware } = require("../middleware/auth");
 const { managerOnly } = require("../middleware/role");
+
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+});
 
 /**
  * @route   POST /api/create-new-access-code
@@ -54,11 +62,7 @@ router.post(
  * @desc    Get all employees' information.
  * @return  { success: true, employees: [{ name, email, phoneNumber, role, ... }] }
  */
-router.get(
-  "/get-all-employees",
-  authMiddleware,
-  controller.getAllEmployees
-);
+router.get("/get-all-employees", authMiddleware, controller.getAllEmployees);
 
 /**
  * @route   GET /api/get-employee
@@ -122,6 +126,17 @@ router.put(
  */
 router.post("/resend-access-code", controller.resendAccessCode);
 
-
+/**
+ * @route   POST /api/upload-image
+ * @desc    Upload an image to Cloudinary.
+ * @body    { file: "IMAGE" }
+ * @return  { success: true, url: "IMAGE URL" }
+ */
+router.post(
+  "/upload-image",
+  authMiddleware,
+  upload.single("file"),
+  controller.uploadImage
+);
 
 module.exports = router;

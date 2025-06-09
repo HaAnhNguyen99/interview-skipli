@@ -37,7 +37,7 @@ export const loginEmployee = (username: string, password: string) =>
 
 // Get all employees
 export const getAllEmployees = (token: string) =>
-  employeeAPI.get("/get-all-employees", getAuthConfig(token));
+  employeeAPI.get("/messages/employees", getAuthConfig(token));
 
 // Create employee
 export const createEmployee = (token: string, employee: EmployeeBase) =>
@@ -71,4 +71,16 @@ export const updateEmployeeProfile = (
     getAuthConfig(token)
   );
 
+// Upload image
+export const uploadImage = (token: string, file: File) =>
+  employeeAPI.post(
+    "/upload-image",
+    { file },
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 export default employeeAPI;

@@ -8,7 +8,7 @@ const ChatSidebar = ({
 }) => {
   const { selectedEmployee, setSelectedEmployee } = useChat();
   return (
-    <aside className="w-1/5 h-full border-r border-gray-200 overflow-hidden">
+    <aside className="w-1/5 h-full border-r border-gray-200 overflow-y-scroll hide-scrollbar">
       {employees?.map((employee) => (
         <div
           key={employee.id}
@@ -16,7 +16,7 @@ const ChatSidebar = ({
             selectedEmployee?.id === employee.id ? "bg-amber-100" : ""
           }`}
           onClick={() => setSelectedEmployee(employee)}>
-          {employee.name} - {employee.email}
+          {employee.name} - {employee.role}
         </div>
       ))}
     </aside>
