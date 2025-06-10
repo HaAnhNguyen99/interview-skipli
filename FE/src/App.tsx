@@ -102,7 +102,13 @@ const routeConfig = [
     path: ROUTES.EMPLOYEE.UPLOAD_IMAGE,
     element: (
       <ProtectedRoute>
-        <UploadImage />
+        <LayoutDashboard>
+          <UploadImage
+            imageUrl={
+              "https://res.cloudinary.com/ddu7hyivk/image/upload/v1749476681/1749476664147.png"
+            }
+          />
+        </LayoutDashboard>
       </ProtectedRoute>
     ),
   },
@@ -118,8 +124,7 @@ function App() {
               <Route
                 key={route.path}
                 path={route.path}
-                element={route.element}
-              />
+                element={route.element} />
             ))}
           </Routes>
         </BrowserRouter>
