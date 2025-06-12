@@ -16,4 +16,5 @@ export interface EmployeeResponse extends EmployeeBase {
   id: string;
   createdAt: string;
   status: EmployeeStatus;
+  avatarUrl?: string;
 }

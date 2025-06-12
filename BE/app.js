@@ -35,7 +35,6 @@ io.on("connection", (socket) => {
     if (!onlineUsers[userId]) onlineUsers[userId] = [];
 
     onlineUsers[userId].push(socket.id);
-
     console.log("Joined:", onlineUsers);
   });
 

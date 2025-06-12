@@ -38,7 +38,6 @@ const EditEmployee = ({ employee, onUpdated }: EditEmployeeProps) => {
   const [error, setError] = useState("");
   const { user, token } = useUser();
 
-  console.log(employee);
   const form = useForm<EmployeeFormData>({
     resolver: zodResolver(employeeSchema),
     defaultValues: {

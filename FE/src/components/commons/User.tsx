@@ -11,16 +11,20 @@ import {
 import avt from "@/assets/avt.png";
 import Profile from "./Profile";
 import { useUser } from "@/context/UserContext";
-import { KeyRound, Lock, LogOutIcon } from "lucide-react";
+import { LogOutIcon } from "lucide-react";
 
 const User = () => {
-  const { logout } = useUser();
+  const { logout, user } = useUser();
   return (
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <div className="w-fit rounded-full bg-white border">
-            <img src={avt} alt="avatar" className="w-10 h-10 rounded-full" />
+          <div className="w-fit rounded-full bg-white border cursor-pointer p-1 hover:bg-gray-100 transition-all">
+            <img
+              src={user?.role === "manager" ? avt : user?.avatarUrl}
+              alt="avatar"
+              className="w-10 h-10 rounded-full object-cover"
+            />
           </div>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">

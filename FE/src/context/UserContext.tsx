@@ -6,6 +6,7 @@ type User = {
   email?: string;
   employeeId?: string;
   name?: string;
+  avatarUrl?: string;
 };
 
 type UserContextType = {
@@ -14,6 +15,7 @@ type UserContextType = {
   login: (user: User, token: string) => void;
   logout: () => void;
   updateUser: (user: User) => void;
+  updateUserData: (fields: UpdateUserFields) => void;
 };
 
 type UpdateUserFields = Pick<User, "name" | "email" | "phoneNumber">;
@@ -41,6 +43,15 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
     localStorage.setItem("user", JSON.stringify(user));
   };
 
+  const updateUserData = (fields: UpdateUserFields) => {
+    setUser((prevUser) => {
+      if (!prevUser) return prevUser;
+      const updatedUser = { ...prevUser, ...fields };
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      return updatedUser;
+    });
+  };
+
   const logout = () => {
     setUser(null);
     setToken("null");
@@ -58,7 +69,8 @@ export const UserProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, token, login, logout, updateUser }}>
+    <UserContext.Provider
+      value={{ user, token, login, logout, updateUser, updateUserData }}>
       {children}
     </UserContext.Provider>
   );

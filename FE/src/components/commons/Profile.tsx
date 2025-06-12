@@ -22,6 +22,7 @@ import {
 import { updateEmployeeProfile } from "@/services/employeeApi";
 import axios from "axios";
 import type { Employee } from "@/types/employee";
+import UploadImage from "./UploadImage";
 
 const Profile = () => {
   const [open, setOpen] = useState(false);
@@ -58,8 +59,6 @@ const Profile = () => {
       });
 
       updateUser(res.data.employee);
-
-      alert("Profile updated successfully!");
       setOpen(false);
     } catch (error) {
       if (axios.isAxiosError(error)) {
@@ -91,13 +90,9 @@ const Profile = () => {
               done.
             </DialogDescription>
           </DialogHeader>
+          <UploadImage imageUrl={user?.avatarUrl || ""} />
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-4">
-              <div className="grid gap-3">
-                <Label htmlFor="name-1">Name</Label>
-                <Input id="name-1" {...form.register("name")} />
-              </div>
-
               <div className="grid gap-3">
                 <Label htmlFor="phone-number">Phone number</Label>
                 <Input
@@ -107,10 +102,20 @@ const Profile = () => {
                 />
               </div>
               {user?.role !== "manager" && (
-                <div className="grid gap-3">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" {...form.register("email")} type="email" />
-                </div>
+                <>
+                  <div className="grid gap-3">
+                    <Label htmlFor="name-1">Name</Label>
+                    <Input id="name-1" {...form.register("name")} />
+                  </div>
+                  <div className="grid gap-3">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                      id="email"
+                      {...form.register("email")}
+                      type="email"
+                    />
+                  </div>
+                </>
               )}
             </div>
             <DialogFooter className="mt-4">

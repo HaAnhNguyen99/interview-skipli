@@ -42,16 +42,19 @@ const EmployeeLogin = () => {
     try {
       const res = await loginEmployee(data.username, data.password);
 
-      const { employeeId, success, token, phoneNumber, role, email, name } =
-        res.data;
+      const {
+        employeeId,
+        success,
+        token,
+        phoneNumber,
+        role,
+        email,
+        name,
+        avatarUrl,
+      } = res.data;
 
       if (success) {
-        login({ employeeId, phoneNumber, role, email, name }, token);
-        navigate("/employee/dashboard");
-      } else {
-        setLoginErr(res.data.msg || "Invalid username or password");
-      }
-      if (res.data.success) {
+        login({ employeeId, phoneNumber, role, email, name, avatarUrl }, token);
         navigate("/employee/dashboard");
       } else {
         setLoginErr(res.data.msg || "Invalid username or password");

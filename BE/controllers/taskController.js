@@ -41,6 +41,7 @@ exports.getTasks = async (req, res) => {
               role: empData.role,
               phoneNumber: empData.phoneNumber,
               username: empData.username,
+              avatarUrl: empData.avatarUrl || null,
             };
           }
         }

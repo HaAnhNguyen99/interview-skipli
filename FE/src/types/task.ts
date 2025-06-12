@@ -18,6 +18,7 @@ export interface TaskResponse extends Task {
 
 export interface AllTaskResponse extends Omit<TaskResponse, "assignedTo"> {
   assignedTo: Employee;
+  avatarUrl: string | null;
 }
 
 export enum TaskStatus {

@@ -11,7 +11,6 @@ const EmployeeDashboard = () => {
     const fetchTasks = async () => {
       const tasks = await getEmployeeTasks(token, user?.employeeId || "");
       setTasks(tasks.data.tasks);
-      console.log(tasks.data.tasks);
     };
     fetchTasks();
   }, []);

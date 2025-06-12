@@ -150,6 +150,7 @@ exports.createEmployee = async (req, res) => {
       phoneNumber,
       role,
       setupToken,
+      avatarUrl: "https://avatar.iran.liara.run/public/28",
       createdAt: Date.now(),
       status: "inactive",
     });
@@ -160,11 +161,10 @@ exports.createEmployee = async (req, res) => {
     await sendMail(
       email,
       "Welcome to Skipli!",
-      ` You have been added to the system.
-        Email: ${email}
-        Role: ${role}
-
-        Please click the link below to set your password: ${setupLink} `
+      `You have been added to the system.
+      Email: ${email}
+      Role: ${role}
+      Please click the link below to set your password: ${setupLink} `
     );
 
     res.json({ success: true, employeeId: newDoc.id });
@@ -199,12 +199,11 @@ exports.getAllEmployees = async (req, res) => {
 
     const employeesWithId = docs.map((doc) => {
       const employee = doc.data();
-      let status = employee.setupToken ? "inactive" : "active";
+
       const { passwordHash, username, ...employeeWithoutSensitive } = employee;
       return {
         id: doc.id,
         ...employeeWithoutSensitive,
-        status,
       };
     });
 
@@ -233,8 +232,10 @@ exports.getEmployee = async (req, res) => {
 exports.employeeLogin = async (req, res) => {
   const { username, password } = req.body;
 
-  const snapshot = await db.collection("employees").get();
-  console.log(snapshot.docs);
+  const snapshot = await db
+    .collection("employees")
+    .where("username", "==", username)
+    .get();
 
   if (snapshot.empty)
     return res.status(400).json({ success: false, msg: "User not found" });
@@ -242,7 +243,12 @@ exports.employeeLogin = async (req, res) => {
   const doc = snapshot.docs[0];
   const employee = doc.data();
 
+  snapshot.forEach((doc) => {
+    console.log(doc.id, doc.data());
+  });
+
   const match = await bcrypt.compare(password, employee.passwordHash);
+
   if (!match)
     return res.status(400).json({ success: false, msg: "Invalid password" });
 
@@ -259,6 +265,7 @@ exports.employeeLogin = async (req, res) => {
     role: employee.role,
     name: employee.name,
     email: employee.email,
+    avatarUrl: employee.avatarUrl,
     phoneNumber: employee.phoneNumber,
   });
 };
@@ -293,6 +300,7 @@ exports.setupEmployeeAccount = async (req, res) => {
       username: username,
       passwordHash: passwordHash,
       setupToken: admin.firestore.FieldValue.delete(),
+      status: "active",
     });
 
     res.json({ success: true });
@@ -314,15 +322,28 @@ exports.updateEmployee = async (req, res) => {
 };
 
 exports.uploadImage = async (req, res) => {
+  const userID = req.user?.employeeId;
   if (!req.file) {
     return res.status(400).json({ success: false, msg: "No file uploaded" });
   }
 
-  const file = req.file;
-  
   try {
-    const url = await uploadImage(file);
-    res.json({ success: true, url });
+    const url = await uploadImage(req.file);
+    if (!url) {
+      return res.status(500).json({ success: false, msg: "Upload failed" });
+    }
+
+    if (userID) {
+      await db.collection("employees").doc(userID).update({ avatarUrl: url });
+    }
+    // get user information from database
+    const userDoc = await db.collection("employees").doc(userID).get();
+    const { passwordHash, username, status, ...filteredUserDocs } =
+      userDoc.data();
+    res.json({
+      success: true,
+      user: { employeeId: userID, ...filteredUserDocs },
+    });
   } catch (err) {
     res.status(500).json({ success: false, msg: err.message });
   }

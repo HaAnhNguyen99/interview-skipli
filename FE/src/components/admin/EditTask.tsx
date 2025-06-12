@@ -5,7 +5,7 @@ import {
   type AllTaskResponse,
   type Task,
 } from "@/types/task";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "../commons/ui/button";
 import {
   DialogHeader,
@@ -62,7 +62,7 @@ const EditTask = ({
       assignedTo: task.assignedTo.id,
       createdBy: task.createdBy,
       priority: task.priority,
-      deadline: task.deadline ? new Date(task.deadline) : "",
+      deadline: task.deadline,
     } as Task,
   });
 

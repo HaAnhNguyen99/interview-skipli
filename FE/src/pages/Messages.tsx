@@ -86,7 +86,6 @@ const Messages = () => {
   }, [messages]);
 
   if (!selectedEmployee && user?.role === "manager") return <></>;
-  console.log(fromID);
   return (
     <div
       className="flex flex-col gap-2 relative overflow-y-scroll h-[calc(100vh-150px)]"

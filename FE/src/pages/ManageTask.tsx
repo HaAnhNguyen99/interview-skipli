@@ -46,6 +46,11 @@ const ManageTask = () => {
       </div>
     );
 
+  console.log(
+    tasks.forEach((task) => {
+      console.log(task.avatarUrl);
+    })
+  );
   return (
     <div className="mt-10 px-10">
       <header className="flex justify-between items-center">
@@ -111,7 +116,17 @@ const ManageTask = () => {
                       )}
                     </TableCell>
 
-                    <TableCell>{task.assignedTo.name}</TableCell>
+                    <TableCell className="flex items-center gap-2">
+                      {task.avatarUrl && (
+                        <img
+                          src={task.avatarUrl}
+                          alt="Avatar"
+                          className="w-8 h-8 rounded-full"
+                        />
+                      )}
+
+                      <p>{task.assignedTo.name}</p>
+                    </TableCell>
                     <TableCell className="capitalize">
                       <TaskStatusBadge priority={task.priority} />
                     </TableCell>

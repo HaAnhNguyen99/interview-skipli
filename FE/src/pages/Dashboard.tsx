@@ -60,7 +60,14 @@ const Dashboard = () => {
             {employees.length > 0 ? (
               employees.map((employee) => (
                 <TableRow key={employee.id}>
-                  <TableCell>{employee.name}</TableCell>
+                  <TableCell className="flex items-center gap-2">
+                    <img
+                      src={employee?.avatarUrl}
+                      alt="Avatar"
+                      className="w-10 h-10 rounded-full"
+                    />
+                    {employee.name}
+                  </TableCell>
                   <TableCell>{employee.email}</TableCell>
                   <TableCell>{employee.phoneNumber}</TableCell>
                   <TableCell className="capitalize">{employee.role}</TableCell>

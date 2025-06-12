@@ -27,7 +27,6 @@ const ROUTES = {
     SETUP: "/employee/setup",
     LOGIN: "/employee/login",
     DASHBOARD: "/employee/dashboard",
-    UPLOAD_IMAGE: "/employee/upload-image",
   },
 };
 
@@ -98,20 +97,6 @@ const routeConfig = [
       </ProtectedRoute>
     ),
   },
-  {
-    path: ROUTES.EMPLOYEE.UPLOAD_IMAGE,
-    element: (
-      <ProtectedRoute>
-        <LayoutDashboard>
-          <UploadImage
-            imageUrl={
-              "https://res.cloudinary.com/ddu7hyivk/image/upload/v1749476681/1749476664147.png"
-            }
-          />
-        </LayoutDashboard>
-      </ProtectedRoute>
-    ),
-  },
 ];
 
 function App() {
@@ -124,7 +109,8 @@ function App() {
               <Route
                 key={route.path}
                 path={route.path}
-                element={route.element} />
+                element={route.element}
+              />
             ))}
           </Routes>
         </BrowserRouter>

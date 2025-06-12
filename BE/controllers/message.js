@@ -37,13 +37,8 @@ exports.getMessages = async (req, res) => {
 
 exports.getAllEmployeesWithMessages = async (req, res) => {
   try {
-    const snapshot = await db
-      .collection("employees")
-      .where("status", "==", "active")
-      .get();
+    const snapshot = await db.collection("employees").get();
     const docs = snapshot.docs;
-
-    console.log(docs);
 
     const employeesWithId = docs.map((doc) => {
       const employee = doc.data();

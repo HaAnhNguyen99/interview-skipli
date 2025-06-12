@@ -72,15 +72,11 @@ export const updateEmployeeProfile = (
   );
 
 // Upload image
-export const uploadImage = (token: string, file: File) =>
-  employeeAPI.post(
-    "/upload-image",
-    { file },
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+export const uploadImage = (token: string, payload: FormData) =>
+  employeeAPI.post("/upload-image", payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
 export default employeeAPI;
