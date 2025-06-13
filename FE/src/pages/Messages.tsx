@@ -6,6 +6,7 @@ import io from "socket.io-client";
 import { useUser } from "@/context/UserContext";
 import type { Socket } from "socket.io-client";
 import { useChat } from "@/context/ChatConText";
+import avt from "@/assets/avt.png";
 
 type Message = {
   from: string;
@@ -87,29 +88,78 @@ const Messages = () => {
 
   if (!selectedEmployee && user?.role === "manager") return <></>;
   return (
-    <div
-      className="flex flex-col gap-2 relative overflow-y-scroll h-[calc(100vh-150px)]"
-      ref={scrollRef}>
-      <div className="mt-4">
-        {messages.map((msg, id) => (
-          <div key={id}>
-            <strong>
-              {msg.from === fromID
-                ? "You"
-                : user?.role !== "manager"
-                ? "Manager"
-                : selectedEmployee?.name}
-              :
-            </strong>{" "}
-            {msg.content}
-          </div>
-        ))}
+    <div className="flex flex-col gap-2 relative  h-[calc(100vh-150px)]">
+      <div className="mt-4 flex-1 overflow-y-scroll" ref={scrollRef}>
+        {messages.map((msg, id) => {
+          const isOwnMessage = msg.from === fromID;
+
+          return (
+            <div
+              key={id}
+              className={`flex gap-2 items-center mb-2 ${
+                isOwnMessage ? "justify-end text-right" : "justify-start"
+              }`}>
+              <div
+                className={`flex gap-4 items-center ${
+                  isOwnMessage ? "flex-row-reverse" : "flex-row"
+                }`}>
+                <strong>
+                  {isOwnMessage ? (
+                    <div className={`flex items-center  flex-col`}>
+                      <div className="w-10 h-10 rounded-full bg-gray-200">
+                        <img
+                          src={user?.avatarUrl || avt}
+                          alt="avatar"
+                          className="w-full h-full rounded-full"
+                        />
+                      </div>
+                      <span className="text-sm text-gray-400 font-medium">
+                        You
+                      </span>
+                    </div>
+                  ) : user?.role !== "manager" ? (
+                    "Manager"
+                  ) : (
+                    <div className="flex gap-2 items-center">
+                      <div className="w-10 h-10 rounded-full bg-gray-200">
+                        <img
+                          src={selectedEmployee?.avatarUrl || avt}
+                          alt="avatar"
+                          className="w-full h-full rounded-full"
+                        />
+                      </div>
+                      <span>{selectedEmployee?.name}:</span>
+                    </div>
+                  )}
+                </strong>
+
+                <div
+                  className={`p-2 relative rounded-md max-w-[70%] ${
+                    isOwnMessage ? "bg-blue-200" : "bg-gray-200"
+                  }`}>
+                  <div
+                    className={`absolute top-2 ${
+                      isOwnMessage ? "right-[-7px]" : "left-[-7px]"
+                    } w-0 h-0 border-t-[10px] border-b-[10px] border-l-[10px] border-transparent rotate-180`}
+                    style={{
+                      borderLeftColor: isOwnMessage ? "#bfdbfe" : "#e5e7eb",
+                      transform: isOwnMessage ? "rotate(180deg)" : "none",
+                    }}></div>
+                  {msg.content}
+                </div>
+              </div>
+            </div>
+          );
+        })}
       </div>
-      <form
-        onSubmit={handleSendMessage}
-        className="flex gap-2 absolute bottom-0 left-0 p-4 bg-white">
+
+      <form onSubmit={handleSendMessage} className="flex gap-2 p-4">
         <Input type="text" ref={inputRef} placeholder="Type your message" />
-        <Button type="submit">Send</Button>
+        <Button
+          type="submit"
+          className="active:scale-90 transition-all ease-in-out duration-300">
+          Send
+        </Button>
       </form>
     </div>
   );
