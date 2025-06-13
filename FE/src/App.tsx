@@ -14,7 +14,7 @@ import { TaskProvider } from "./context/TaskContext";
 import Messages from "./pages/Messages";
 import LayoutChat from "./layouts/LayoutChat";
 import { ChatProvider } from "./context/ChatConText";
-import UploadImage from "./components/commons/UploadImage";
+
 const ROUTES = {
   HOME: "/",
   ADMIN: {
@@ -83,6 +83,7 @@ const routeConfig = [
       </ProtectedRoute>
     ),
   },
+
   {
     path: ROUTES.MESSAGES,
     element: (

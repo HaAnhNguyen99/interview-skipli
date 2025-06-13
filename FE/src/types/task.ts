@@ -33,3 +33,18 @@ export enum TaskPriority {
   HIGH = "high",
   URGENT = "urgent",
 }
+
+export const statusArr = [
+  {
+    label: "Pending",
+    value: TaskStatus.PENDING,
+  },
+  {
+    label: "In Progress",
+    value: TaskStatus.IN_PROGRESS,
+  },
+  {
+    label: "Completed",
+    value: TaskStatus.COMPLETED,
+  },
+];
