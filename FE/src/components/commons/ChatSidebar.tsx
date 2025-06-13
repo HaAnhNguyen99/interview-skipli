@@ -16,7 +16,19 @@ const ChatSidebar = ({
             selectedEmployee?.id === employee.id ? "bg-amber-100" : ""
           }`}
           onClick={() => setSelectedEmployee(employee)}>
-          {employee.name} - {employee.role}
+          <div className="w-10 h-10 rounded-full overflow-hidden">
+            {employee.avatarUrl && (
+              <img
+                src={employee.avatarUrl}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+            )}
+          </div>
+          <div className="flex flex-col flex-1">
+            <p className="text-sm font-medium">{employee.name}</p>
+            <p className="text-xs text-gray-500">{employee.role}</p>
+          </div>
         </div>
       ))}
     </aside>
