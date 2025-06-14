@@ -21,7 +21,7 @@ const User = () => {
         <DropdownMenuTrigger asChild>
           <div className="w-fit rounded-full bg-white border cursor-pointer p-1 hover:bg-gray-100 transition-all">
             <img
-              src={user?.role === "manager" ? avt : user?.avatarUrl}
+              src={user?.avatarUrl || avt}
               alt="avatar"
               className="w-10 h-10 rounded-full object-cover"
             />

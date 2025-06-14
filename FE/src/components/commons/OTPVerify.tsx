@@ -82,6 +82,9 @@ const OTPVerify = ({
           {
             phoneNumber: res.data.phoneNumber,
             role: res.data.role,
+            name: res.data.name,
+            avatarUrl: res.data.avatarUrl,
+            email: res.data.email,
           },
           res.data.token
         );

@@ -10,6 +10,7 @@ export type EmployeeStatus = "active" | "inactive";
 
 export interface Employee extends EmployeeBase {
   id: string;
+  avatarUrl?: string;
 }
 
 export interface EmployeeResponse extends EmployeeBase {

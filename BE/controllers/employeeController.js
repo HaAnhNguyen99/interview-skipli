@@ -51,7 +51,6 @@ exports.createNewAccessCode = async (req, res) => {
 exports.validateAccessCode = async (req, res) => {
   const { phoneNumber, accessCode } = req.body;
   const doc = await db.collection("accessCodes").doc(phoneNumber).get();
-  console.log(doc.data());
   if (!doc.exists)
     return res.status(404).json({ success: false, msg: "No code found" });
 
@@ -61,15 +60,23 @@ exports.validateAccessCode = async (req, res) => {
 
   await db.collection("accessCodes").doc(phoneNumber).delete();
 
+  const managerDoc = await db.collection("managers").doc(phoneNumber).get();
+  if (!managerDoc.exists)
+    return res.status(404).json({ success: false, msg: "No manager found" });
+
   const role = process.env.ROLE_MANAGER;
   const payload = { phoneNumber, role };
+  const { name, avatarUrl, email } = managerDoc.data();
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
   res.json({
     success: true,
     phoneNumber,
-    role,
+    name,
     token,
+    avatarUrl,
+    email,
+    role,
   });
 };
 
@@ -344,6 +351,63 @@ exports.uploadImage = async (req, res) => {
       success: true,
       user: { employeeId: userID, ...filteredUserDocs },
     });
+  } catch (err) {
+    res.status(500).json({ success: false, msg: err.message });
+  }
+};
+
+exports.getManagerInfo = async (req, res) => {
+  const doc = await db.collection("managers").get();
+  if (doc.empty)
+    return res.status(404).json({ success: false, msg: "Not found" });
+  const manager = doc.docs[0].data();
+  res.json({
+    success: true,
+    manager: {
+      name: manager.name,
+      phoneNumber: manager.phoneNumber,
+      avatarUrl: manager.avatarUrl,
+    },
+  });
+};
+
+exports.updateManagerInfo = async (req, res) => {
+  const { name, phoneNumber, email } = req.body;
+  await db.collection("managers").doc(phoneNumber).update({
+    name,
+    avatarUrl,
+    email,
+  });
+  res.json({ success: true });
+};
+
+exports.updateManagerAvatar = async (req, res) => {
+  const { phoneNumber } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ success: false, msg: "No file uploaded" });
+  }
+
+  try {
+    const url = await uploadImage(req.file);
+    if (!url) {
+      return res.status(500).json({ success: false, msg: "Upload failed" });
+    }
+    if (phoneNumber) {
+      await db
+        .collection("managers")
+        .doc(phoneNumber)
+        .update({ avatarUrl: url });
+    }
+
+    const managerDoc = await db.collection("managers").doc(phoneNumber).get();
+    const { passwordHash, username, status, ...filteredManagerDocs } =
+      managerDoc.data();
+    res.json({
+      success: true,
+      manager: { employeeId: phoneNumber, ...filteredManagerDocs },
+    });
+
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, msg: err.message });
   }

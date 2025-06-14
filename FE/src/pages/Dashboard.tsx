@@ -33,11 +33,8 @@ const Dashboard = () => {
   return (
     <div className="px-10">
       <h1 className="text-3xl font-bold tracking-wider">Manage Employee</h1>
-      <Separator className="my-4" />
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold tracking-wider">
-          {employees.length} Employee
-        </h2>
+        <h2 className="text-2xl font-semibold ">{employees.length} Employee</h2>
         <div className="flex gap-2">
           <AddEmployee onAdd={() => fetchEmployees()} />
         </div>

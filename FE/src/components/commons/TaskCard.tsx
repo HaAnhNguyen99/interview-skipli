@@ -1,53 +1,33 @@
-import { TaskStatus, type Task, type TaskResponse } from "@/types/task";
+import { type TaskResponse } from "@/types/task";
 import { format } from "date-fns";
 import { Calendar } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select";
-import { useState } from "react";
 import TaskStatusBadge from "./TaskStatusBadge";
-import { updateEmployeeTask } from "@/services/taskService";
-import { useUser } from "@/context/UserContext";
+import { useDraggable } from "@dnd-kit/core";
+import type { CSSProperties } from "react";
 
 const TaskCard = ({ task }: { task: TaskResponse }) => {
-  const [status, setStatus] = useState<TaskStatus>(task.status);
-  const [prevStatus, setPrevStatus] = useState<TaskStatus>(task.status);
-  const [error, setError] = useState<string>("");
-  const { token } = useUser();
-  const statusArr = [
-    {
-      label: "Pending",
-      value: TaskStatus.PENDING,
-    },
-    {
-      label: "In Progress",
-      value: TaskStatus.IN_PROGRESS,
-    },
-    {
-      label: "Completed",
-      value: TaskStatus.COMPLETED,
-    },
-  ];
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({ id: task.id });
 
-  const handleStatusChange = async (value: TaskStatus) => {
-    setPrevStatus(status);
-    try {
-      setStatus(value);
-      await updateEmployeeTask(token, task.id, value);
-      setError("");
-    } catch (error) {
-      console.error("Failed to update task status:", error);
-      setError("Failed to update task status. Please try again.");
-      setStatus(prevStatus);
-    }
+  const style: CSSProperties = {
+    position: isDragging ? "absolute" : undefined,
+    opacity: isDragging ? 0.5 : 1,
+    border: isDragging ? "2px solid #1010105f" : "2px dashed transparent",
+    height: "fit-content",
+    transform: transform
+      ? `translate(${transform.x}px, ${transform.y}px)`
+      : undefined,
+    zIndex: 100,
+    minWidth: "22vw",
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+    <div
+      className="bg-white rounded-lg shadow-sm border h-fit border-gray-200 p-4 mb-4 cursor-grab"
+      {...attributes}
+      {...listeners}
+      ref={setNodeRef}
+      style={style}>
       <div className="flex justify-between items-start mb-4">
         <div>
           <h3 className="text-lg font-medium text-gray-900">{task.title}</h3>
@@ -56,7 +36,7 @@ const TaskCard = ({ task }: { task: TaskResponse }) => {
               <Calendar />
               {task.deadline
                 ? format(new Date(task.deadline), "MM/dd/yyyy")
-                : "No deadline"}
+                : "No deadline"}{" "}
             </div>
           </div>
         </div>
@@ -64,29 +44,10 @@ const TaskCard = ({ task }: { task: TaskResponse }) => {
           <TaskStatusBadge priority={task.priority} />
         </div>
       </div>
-      <div className="space-y-4">
-        <div>
-          <Select
-            value={status}
-            onValueChange={(value) => handleStatusChange(value as TaskStatus)}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a task status" />
-            </SelectTrigger>
-            <SelectContent>
-              {statusArr.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-      <div className="space-y-4">
+
+      <div className="space-y-4 text-center">
         <p>{task.description}</p>
       </div>
-
-      {error && <p className="text-red-500 text-center mt-2">{error}</p>}
     </div>
   );
 };

@@ -46,11 +46,6 @@ const ManageTask = () => {
       </div>
     );
 
-  console.log(
-    tasks.forEach((task) => {
-      console.log(task.avatarUrl);
-    })
-  );
   return (
     <div className="mt-10 px-10">
       <header className="flex justify-between items-center">

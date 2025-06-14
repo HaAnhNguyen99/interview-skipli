@@ -47,7 +47,6 @@ const Profile = () => {
 
   const onSubmit = async (data: EmployeeProfileFormData) => {
     setLoading(true);
-    console.log(true);
     if (!token || !user.employeeId) {
       alert("Please login again!");
       return;
@@ -94,6 +93,11 @@ const Profile = () => {
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-4">
               <div className="grid gap-3">
+                <Label htmlFor="name-1">Name</Label>
+                <Input id="name-1" {...form.register("name")} />
+              </div>
+
+              <div className="grid gap-3">
                 <Label htmlFor="phone-number">Phone number</Label>
                 <Input
                   id="phone-number"
@@ -101,12 +105,9 @@ const Profile = () => {
                   type="text"
                 />
               </div>
+
               {user?.role !== "manager" && (
                 <>
-                  <div className="grid gap-3">
-                    <Label htmlFor="name-1">Name</Label>
-                    <Input id="name-1" {...form.register("name")} />
-                  </div>
                   <div className="grid gap-3">
                     <Label htmlFor="email">Email</Label>
                     <Input
