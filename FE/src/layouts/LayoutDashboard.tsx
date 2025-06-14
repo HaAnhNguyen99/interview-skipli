@@ -5,6 +5,7 @@ import {
   SidebarTrigger,
 } from "@/components/commons/ui/sidebar";
 import { useUser } from "@/context/UserContext";
+import { CheckSquare, Home, MessageCircle, Users } from "lucide-react";
 
 interface LayoutDashboardProps {
   children: React.ReactNode;
@@ -17,14 +18,17 @@ const LayoutDashboard = ({ children }: LayoutDashboardProps) => {
     {
       title: "Manage Employee",
       url: "/admin/dashboard",
+      icon: Users,
     },
     {
       title: "Manage Task",
       url: "/admin/tasks",
+      icon: CheckSquare,
     },
     {
       title: "Message",
       url: "/messages",
+      icon: MessageCircle,
     },
   ];
 
@@ -32,10 +36,12 @@ const LayoutDashboard = ({ children }: LayoutDashboardProps) => {
     {
       title: "Dashboard",
       url: "/employee/dashboard",
+      icon: Home,
     },
     {
       title: "Message",
       url: "/messages",
+      icon: MessageCircle,
     },
   ];
   return (

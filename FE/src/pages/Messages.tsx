@@ -7,11 +7,13 @@ import { useUser } from "@/context/UserContext";
 import type { Socket } from "socket.io-client";
 import { useChat } from "@/context/ChatConText";
 import avt from "@/assets/avt.png";
+import { formatTimestamp } from "@/lib/utils";
 
 type Message = {
   from: string;
   to: string;
   content: string;
+  timestamp: number;
 };
 const SOCKETID = "http://localhost:4000";
 const MANAGER_PHONE = import.meta.env.VITE_MANAGER_PHONE;
@@ -96,7 +98,7 @@ const Messages = () => {
           return (
             <div
               key={id}
-              className={`flex gap-2 items-center mb-2 ${
+              className={`flex gap-2 items-center mb-5 ${
                 isOwnMessage ? "justify-end text-right" : "justify-start"
               }`}>
               <div
@@ -120,7 +122,7 @@ const Messages = () => {
                   ) : user?.role !== "manager" ? (
                     "Manager"
                   ) : (
-                    <div className="flex gap-2 items-center">
+                    <div className="flex flex-col">
                       <div className="w-10 h-10 rounded-full bg-gray-200">
                         <img
                           src={selectedEmployee?.avatarUrl || avt}
@@ -128,13 +130,13 @@ const Messages = () => {
                           className="w-full h-full rounded-full"
                         />
                       </div>
-                      <span>{selectedEmployee?.name}:</span>
+                      <span>{selectedEmployee?.name}</span>
                     </div>
                   )}
                 </strong>
 
                 <div
-                  className={`p-2 relative rounded-md max-w-[70%] ${
+                  className={`p-2 relative rounded-md ${
                     isOwnMessage ? "bg-blue-200" : "bg-gray-200"
                   }`}>
                   <div
@@ -145,7 +147,12 @@ const Messages = () => {
                       borderLeftColor: isOwnMessage ? "#bfdbfe" : "#e5e7eb",
                       transform: isOwnMessage ? "rotate(180deg)" : "none",
                     }}></div>
-                  {msg.content}
+                  <div>
+                    {msg.content}
+                    <p className="text-xs text-gray-400 font-medium">
+                      {formatTimestamp(msg.timestamp)}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -157,7 +164,7 @@ const Messages = () => {
         <Input type="text" ref={inputRef} placeholder="Type your message" />
         <Button
           type="submit"
-          className="active:scale-90 transition-all ease-in-out duration-300">
+          className="active:scale-90 transition-all ease-in-out duration-300 hover:bg-blue-500 hover:text-white">
           Send
         </Button>
       </form>

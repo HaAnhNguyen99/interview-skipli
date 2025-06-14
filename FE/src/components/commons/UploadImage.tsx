@@ -7,7 +7,7 @@ import {
   DialogDescription,
 } from "@/components/commons/ui/dialog";
 import { useUser } from "@/context/UserContext";
-import { uploadImage } from "@/services/employeeApi";
+import { updateManagerAvatar, uploadImage } from "@/services/employeeApi";
 import { useState, useRef, useCallback } from "react";
 import { Image as ImageIcon } from "lucide-react";
 import { useDropzone } from "react-dropzone";
@@ -39,26 +39,54 @@ const UploadImage = ({ imageUrl }: { imageUrl: string }) => {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("userID", user?.employeeId || "");
-      setOpen(false);
-      try {
-        setIsUploading(true);
-        const res = await uploadImage(token, formData);
-        login(
-          {
-            ...res.data.user,
-          },
-          token
-        );
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        alert("Failed to upload image. Please try again.");
-        return;
-      } finally {
-        setIsUploading(false);
+
+      if (user?.role === "manager") {
+        formData.append("phoneNumber", user?.phoneNumber || "");
+        handleUpdateManagerAvatar(formData);
       }
+
+      handleUpload(formData);
+      setOpen(false);
     },
     [token, user?.employeeId, login]
   );
+
+  const handleUpdateManagerAvatar = async (formData: FormData) => {
+    try {
+      setIsUploading(true);
+      const res = await updateManagerAvatar(token, formData);
+      login(
+        {
+          ...res.data.manager,
+        },
+        token
+      );
+    } catch (error) {
+      console.error("Error updating manager avatar:", error);
+      alert("Failed to update manager avatar. Please try again.");
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleUpload = async (formData: FormData) => {
+    try {
+      setIsUploading(true);
+      const res = await uploadImage(token, formData);
+      login(
+        {
+          ...res.data.user,
+        },
+        token
+      );
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Failed to upload image. Please try again.");
+      return;
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {

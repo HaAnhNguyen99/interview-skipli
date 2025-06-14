@@ -79,4 +79,14 @@ export const uploadImage = (token: string, payload: FormData) =>
       Authorization: `Bearer ${token}`,
     },
   });
+
+// Update manager avatar
+export const updateManagerAvatar = (token: string, payload: FormData) =>
+  employeeAPI.post("/update-manager-avatar", payload, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export default employeeAPI;

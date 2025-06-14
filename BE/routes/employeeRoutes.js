@@ -139,4 +139,36 @@ router.post(
   controller.uploadImage
 );
 
+/**
+ * @route   GET /api/get-manager-info
+ * @desc    Get manager's information.
+ * @return  { success: true, manager: { name, phoneNumber, avatarUrl } }
+ */
+router.get("/get-manager-info", authMiddleware, controller.getManagerInfo);
+
+/**
+ * @route   POST /api/update-manager-info
+ * @desc    Update manager's information.
+ * @body    { phoneNumber: "PHONE NUMBER", email: "EMAIL" }
+ * @return  { success: true }
+ */
+router.post(
+  "/update-manager-info",
+  authMiddleware,
+  controller.updateManagerInfo
+);
+
+/**
+ * @route   POST /api/update-manager-avatar
+ * @desc    Update manager's avatar.
+ * @body    { file: "IMAGE" }
+ * @return  { success: true }
+ */
+router.post(
+  "/update-manager-avatar",
+  authMiddleware,
+  upload.single("file"),
+  controller.updateManagerAvatar
+);
+
 module.exports = router;
